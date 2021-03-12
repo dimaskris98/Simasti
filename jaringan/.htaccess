@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteBase /simasti/ 
+RewriteRule ^index\.php$ - [L]
+RewriteRule ^/?([0-9a-zA-Z_-]+)/?$ jaringan/index.php?mod=$1&id=$2 [QSA,L]

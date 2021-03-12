@@ -1,0 +1,7 @@
+  
+ 
+.chosen-container-single
+.chosen-single abbr:after{content:"\f00d";display:inline-block;color:#888;font-family:FontAwesome;font-size:13px;position:absolute;right:0;top:-7px}
+ 
+.chosen-single div b:before{content:"\f0d7";display:inline-block;color:#888;font-family:FontAwesome;font-size:12px;position:relative; }  
+ 
