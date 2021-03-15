@@ -137,6 +137,13 @@
 				</div>
 			</div>
 		</div>
+		<div class="row">
+		<div class="col-md-12">
+				<h4 class="text-center"> Data Consumable Tahun <?= date('Y') ?></h4>
+				<div style="width: 500px; margin: auto;margin-top: 15px;margin-bottom: 15px;" id="consumableChart">
+				</div>
+			</div>
+		</div>
 	</div>
 	<div class="clearfix"> </div>
 </div>

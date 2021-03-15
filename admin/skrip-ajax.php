@@ -123,6 +123,32 @@
 	});
 </script>
 
+<!-- KELUHAN-->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#addKeluhan").click(function(e) {
+			e.preventDefault();
+			if ($("#keluhanBaru").val() === '') {
+				alert("Please enter some text!");
+				return false;
+			}
+			var myData = 'konten_keluhan=' + $("#keluhanBaru").val(); //build a post data structure
+			jQuery.ajax({
+				type: "POST", // Post / Get method
+				url: "save-proses.php", //Where form data is sent on submission
+				dataType: "text", // Data type, HTML, json etc.
+				data: myData, //Form variables
+				success: function(response) {
+					$("#keluhan").append(response);
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					alert(thrownError);
+				}
+			});
+		});
+	});
+</script>
+
 <!-- KATEGORI consumable-->
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -489,7 +515,6 @@
 	});
 </script>
 
-
 <script>
 	$(document).ready(function() {
 		var dataTable = $('#<?php echo $namastatus; ?>').DataTable({
@@ -563,6 +588,8 @@
 		});
 	});
 </script>
+
+
 <script>
 	$(document).ready(function() {
 		var dataTable = $('table.<?php echo $mod; ?>').DataTable({
@@ -600,6 +627,7 @@
 	});
 </script>
 
+<!-- TABLE LOKASI -->
 <script>
 	$(document).ready(function() {
 		var dataTable = $('table.lokasidata').DataTable({
@@ -634,6 +662,7 @@
 	});
 </script>
 
+<!-- TABEL PERBAIKAN -->
 <script>
 	$(document).ready(function() {
 		var dataTable = $('#Perbaikantable').DataTable({
@@ -668,6 +697,7 @@
 	});
 </script>
 
+<!-- TABEL KOMPONEN -->
 <script>
 	$(document).ready(function() {
 		var dataTable = $('#tabelkomponen').DataTable({
@@ -702,6 +732,7 @@
 	});
 </script>
 
+<!-- TABEL PEMASOK -->
 <script>
 	$(document).ready(function() {
 		var dataTable = $('#tabelpemasok').DataTable({
@@ -736,6 +767,7 @@
 	});
 </script>
 
+<!-- TABEL EMPLOYEE -->
 <script>
 	$(document).ready(function() {
 		var dataTable = $('#employtb').DataTable({
@@ -770,6 +802,7 @@
 	});
 </script>
 
+<!-- TABEL ORGANIK -->
 <script>
 	$(document).ready(function() {
 		var dataTable = $('#organiktabel').DataTable({
@@ -807,7 +840,57 @@
 	});
 </script>
 
+<!-- LAPORAN DISTRIBUS DEPARTEMEN -->
+<script type="text/javascript">
+	$(document).ready(function() {
 
+		$('.laporan').DataTable({
+			"ordering": false,
+			dom: 'Bt',
+			buttons: [{
+				extend: 'print',
+				text: '<span title="Free Web tutorials" class="fa fa-print" aria-hidden="true" ></span>',
+				titleAttr: 'Print',
+				columns: ':not(.select-checkbox)',
+				orientation: 'landscape'
+			}, {
+				extend : 'excel',
+				action : function (e, dt, node, config) {
+					let span = this.childNodes;
+					console.log(this);
+					$.fn.dataTable.ext.buttons.excelHtml5.action.call(this,e, dt, node, config);
+				}
+			}, 'copy', 'csv', 'pdf']
+		});
+
+		var dataTable = $('#lapDisDep').DataTable({
+			"processing": true,
+			"searchable": true,
+			"stateSave": true,
+			"paging": true,
+			"lengthMenu": [
+				[10, 25, 50, 100, -1],
+				[10, 25, 50, 100, "All"]
+			],
+			"pagingType": "full_numbers",
+			"pageLength": 10,
+			dom: 'Blfrtip',
+			buttons: [{
+					extend: 'print',
+					text: '<span class="fa fa-print" aria-hidden="true"></span>',
+					titleAttr: 'Print',
+					columns: ':not(.select-checkbox)',
+					orientation: 'landscape'
+				}, {
+					extend: 'excel',
+					title: 'LAPORAN DISTRIBUSI DEPARTEMEN <?= $bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+
+				},
+				'copy', 'csv', 'pdf'
+			],
+		});
+	});
+</script>
 <script type="text/javascript">
 	$(function() {
 		$('#departemen').change(function() {
@@ -985,10 +1068,11 @@
 		drawChart();
 		drawBarChart();
 		drawKomponen();
+		drawKonsumable();
 	});
-
+	//DATA Aset
 	function drawChart() {
-		//DATA Aset
+
 		var data = google.visualization.arrayToDataTable([
 			['Merk', 'sdsdsdsdsds'],
 			<?php
@@ -1013,7 +1097,7 @@
 
 
 	}
-
+	// DATA PERBAIKAN
 	function drawBarChart() {
 		<?php
 		$data = [];
@@ -1053,17 +1137,17 @@
 		var barChart = new google.charts.Bar(document.getElementById('perbaikanChart'));
 		barChart.draw(data, google.charts.Bar.convertOptions(options));
 	}
-
+	// DATA KOMPONEN
 	function drawKomponen() {
 		<?php
 		$data = [];
 		$sql = "SELECT nama_kategori, SUM(a.sisa) as total FROM komponen as a          
 		LEFT JOIN kategori as b ON a.id_kategori = b.id_kategori Group By a.id_kategori";
-		$q = mysqli_query($conn,$sql);
-		while($v = mysqli_fetch_assoc($q)){
-			array_push($data,$v);
+		$q = mysqli_query($conn, $sql);
+		while ($v = mysqli_fetch_assoc($q)) {
+			array_push($data, $v);
 		}
-		
+
 		//echo mysqli_error($conn);
 		//var_dump($data);
 		?>
@@ -1071,7 +1155,7 @@
 		var data = google.visualization.arrayToDataTable([
 			['Kategori', 'Total'],
 			<?php
-			foreach ($data as $key => $value) { ?>['<?= $value['nama_kategori'].' ('.$value['total'].')' ?>', <?= $value['total'] ?>],
+			foreach ($data as $key => $value) { ?>['<?= $value['nama_kategori'] . ' (' . $value['total'] . ')' ?>', <?= $value['total'] ?>],
 			<?php }
 			?>
 		]);
@@ -1083,6 +1167,43 @@
 		};
 
 		var chart = new google.visualization.PieChart(document.getElementById('komponenChart'));
-		chart.draw(data,options);
+		chart.draw(data, options);
+	}
+	// DATA KONSUMABLE
+	function drawKonsumable() {
+
+		<?php
+		$data = [];
+		$sql = "SELECT nama_consumable, SUM(a.sisa) as total FROM consumable as a GROUP BY nama_consumable";
+		$q = mysqli_query($conn, $sql);
+		while ($v = mysqli_fetch_assoc($q)) {
+			array_push($data, $v);
+		}
+
+		//echo mysqli_error($conn);
+		//var_dump($data);
+		?>
+
+		var data = google.visualization.arrayToDataTable([
+			['Kategori', 'Stok'],
+			<?php
+			foreach ($data as $key => $value) { ?>['<?= $value['nama_consumable'] ?>', <?= $value['total'] ?>],
+			<?php }
+			?>
+		]);
+
+		var options = {
+			width: 500,
+			height: 300,
+			bar: {
+				groupWidth: "75%"
+			},
+			legend: {
+				position: "none"
+			}
+		};
+
+		var barChart = new google.charts.Bar(document.getElementById('consumableChart'));
+		barChart.draw(data, google.charts.Bar.convertOptions(options));
 	}
 </script>

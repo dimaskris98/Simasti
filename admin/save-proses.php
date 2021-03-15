@@ -44,7 +44,11 @@ if (isset($_POST["isi_status"]) && strlen($_POST["isi_status"]) > 0) {
 
 if (isset($_POST["konten_model"]) && strlen($_POST["konten_model"]) > 0) {
 	$contentToSave = filter_var($_POST["konten_model"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+	echo '<option value="' . $contentToSave . '" selected="selected">' . $contentToSave . ' </option>';
+}
 
+if (isset($_POST["konten_keluhan"]) && strlen($_POST["konten_keluhan"]) > 0) {
+	$contentToSave = filter_var($_POST["konten_keluhan"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
 	echo '<option value="' . $contentToSave . '" selected="selected">' . $contentToSave . ' </option>';
 }
 

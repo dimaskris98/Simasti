@@ -310,6 +310,37 @@
 	</div>
 </div>
 
+<!-- KELUHAN -->
+<div class="modal" id="popKeluhan" role="dialog" aria-labelledby="popKeluhan">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="exampleModalLabel">Keluhan Baru</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="col-sm-3 control-label">
+						<h4>Keluhan :</h4>
+					</label>
+					<div class="col-sm-5">
+						<input type="text" name="keluhanBaru" id="keluhanBaru">
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-offset-7 col-sm-5">
+						<button type="submit" class="btn btn-primary" data-dismiss="modal" name="addKeluhan" id="addKeluhan">Simpan</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
 
 <!--Pop Up pemasok-->
 <div class="modal fade" id="popmanufacturer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">

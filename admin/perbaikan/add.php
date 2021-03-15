@@ -6,11 +6,12 @@ if (isset($_POST['save'])) {
 	$pengirim = $_POST['pengirim'];
 	$tlp = $_POST['tlp'];
 	$keluhan = $_POST['keluhan'];
+	$tiket = $_POST['tiket'];
 	$tgl_datang = $_POST['tgl_datang'];
 	$status = "open";
 
 	$sql = "INSERT INTO perbaikan  VALUES ('', '$no_aset', '$pengirim', 
-				'$tlp', '$keluhan', '$tgl_datang', '',  NULL, '$status','', '$id_user')";
+				'$tlp', '$keluhan', '$tgl_datang', '',  NULL, '$status','', '$id_user','$tiket')";
 
 	$query	= mysqli_query($conn, $sql);
 	if ($query) {
@@ -31,7 +32,6 @@ if (isset($_POST['save'])) {
 					<h2 class="box-title"><b>Tambah Data Perbaikan</b></h2>
 					<div class="box-tools pull-right">
 						<a href="javascript:history.back()" class="btn btn-primary">Back</a>
-
 					</div>
 				</div><!-- /.box-header -->
 				<div class="box-body">
@@ -85,17 +85,26 @@ if (isset($_POST['save'])) {
 						<div class="form-group ">
 							<label for="name" class="col-md-3 control-label">Keluhan :</label>
 							<div class="col-md-7 col-sm-12 required">
-								<select name="keluhan" id="input" class="form-control select3" required="required">
-								<option></option>
-									<?php 
-										$sql = "SELECT keluhan FROM perbaikan GROUP BY keluhan";
-										$data = mysqli_query($conn,$sql);
-										while($row = mysqli_fetch_assoc($data)){ ?>
-											<option	value="<?= $row["keluhan"]?>"><?= $row["keluhan"]?></option>
+								<select name="keluhan" id="keluhan" class="form-control select3" required="required">
+									<option></option>
+									<?php
+									$sql = "SELECT keluhan FROM perbaikan GROUP BY keluhan";
+									$data = mysqli_query($conn, $sql);
+									while ($row = mysqli_fetch_assoc($data)) { ?>
+										<option value="<?= $row["keluhan"] ?>"><?= $row["keluhan"] ?></option>
 									<?php } ?>
 								</select>
-								
 							</div>
+							<div class="col-md-1">
+								<button class="btn btn-primary" type="button" data-toggle="modal" data-target="#popKeluhan">Baru</button>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label" for="tiket">Tiket</label>
+							<div class="col-md-7 required">
+								<input type="text" name="tiket" id="tiket" class="form-control" placeholder="" >
+							</div>
+
 						</div>
 						<div class="form-group ">
 							<label for="name" class="col-md-3 control-label">Tanggal</label>
@@ -108,8 +117,7 @@ if (isset($_POST['save'])) {
 							</div>
 						</div>
 						<div class="box-footer text-right">
-
-							<button type="submit" name="save" id="save" class="btn btn-success"><i class="fa fa-check icon-white"></i>Simpan</button>
+							<button type="submit" name="save" id="save" class="btn btn-success"><i class="fa fa-check icon-white"></i> Simpan</button>
 						</div>
 					</form>
 				</div>
