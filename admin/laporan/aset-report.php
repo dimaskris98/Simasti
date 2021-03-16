@@ -16,11 +16,13 @@
 
 	}
 
-	table.dataTable thead th {
+	table.dataTable thead th,
+	table.dataTable thead td,
+	table.dataTable.no-footer {
 		border-bottom: 2px solid #ddd !important;
 	}
 
-	table {
+	.dt-but table {
 		border-collapse: collapse;
 		width: auto;
 	}
@@ -47,6 +49,10 @@
 
 	p.tebal {
 		font-weight: bold;
+	}
+
+	.kanan {
+		float: right;
 	}
 
 	.kolom1 {
@@ -91,11 +97,19 @@
 		$res = $conn->query("SELECT * FROM  data_uker where kd_uker='$kduker'");
 		//SELECT * , data_uker_bagian.* FROM  data_uker INNER JOIN data_uker_bagian ON data_uker.kd_uker=data_uker_bagian.kd_uker where data_uker.kd_uker='$kduker'	 
 		$uker = [];
+		$f = true;
 		while ($ker = $res->fetch_assoc()) {
 			$uker = $ker;
 			$totalformasi = $formasibag['total'] + $ker['formasi_uker'];
 			$totalFormasiNonOrganik = $formasibagnonorganik['formasi_non_organik'] + $ker['formasi_non_organik'];
 			$totalterisiNonOrganik = $terisiNonOrganik['totalisiNonOrganik'] + $ker['non_organik'];
+		}
+		if (empty($uker)) {
+			$sql = "SELECT nama_bag as nama_uker, kd_bag as kd_uker, formasi as formasi_uker
+					FROM  data_uker_bagian where kd_bag='$kduker'";
+			$uker = mysqli_fetch_assoc($conn->query($sql));
+			$totalformasi = $uker['formasi_uker'];
+			$f = false;
 		}
 	?>
 
@@ -333,7 +347,6 @@
 									$kdbag = $rowbag['kd_bag']; ?>
 									<tr>
 										<td><a href="#<?= $rowbag['kd_bag']; ?>"><?= $rowbag['nama_bag']; ?></a></td>
-										</td>
 										<?php
 										//kebutuhan
 										$res = $conn->query("SELECT * FROM data_kategori ORDER BY id ASC");
@@ -345,17 +358,12 @@
 												echo '<td align="center">0</td>';
 											} else {
 												while ($rowreskebutuhan = $reskebutuhan->fetch_assoc()) { ?>
-													<td style="text-align:center;" contenteditable="true" onBlur="saveToDatabase(this,'qty','<?php echo $rowreskebutuhan['id']; ?>')" onClick="showEdit(this);"><?php echo $rowreskebutuhan['qty']; ?></td>
-										<?php
-												}
+													<td class="text-center"><?= $rowreskebutuhan['qty']; ?></td>
+										<?php }
 											}
-										}
-
-										?>
+										} ?>
 									</tr>
-								<?php
-								}
-								?>
+								<?php } ?>
 							</tbody>
 							<tfoot>
 								<tr class="info">
@@ -385,8 +393,8 @@
 					<?php
 					$no1 = 1;
 					$totalasetdep = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_uker='$kduker'"));
-					var_dump($uker);
-					if (!empty($uker)) { ?>
+					//var_dump($uker);
+					if ($f) { ?>
 						<div class="row">
 							<h4 class="text-center"><strong>LAPORAN <?= $uker['nama_uker'] ?> </strong></h4>
 							<h5 class="text-center">Total Aset = <?= $totalasetdep ?></h5>
@@ -398,7 +406,7 @@
 								$sql = "SELECT * FROM data_aset WHERE data_aset.kd_uker='${uker['kd_uker']}' and data_aset.kd_kategori='$kdkat'";
 								$tot = mysqli_num_rows(mysqli_query($conn, $sql));
 								if ($tot > 0) {
-									if ($kdkat == "cp") { ?>
+									if (strtoupper($kdkat) == "CP") { ?>
 										<div class="col-md-12">
 											<p class="tebal"> <?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
 											<?php
@@ -407,7 +415,7 @@
 											while ($rowth = $th->fetch_assoc()) {
 												echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
 											} ?>
-											<table table-layout="auto" width="100%" class="table table-responsive table-hover table-striped table-bordered">
+											<table style="width: 100%;" class="table table-responsive table-hover table-striped table-bordered">
 												<thead>
 													<tr class="info">
 														<th rowspan="2">No</th>
@@ -429,11 +437,207 @@
 												<tbody>
 													<?php
 													$no = 1;
-													$res1 = $conn->query("SELECT *, data_uker.*, data_karyawan.*  FROM data_aset 
-																			LEFT JOIN data_uker ON data_aset.kd_uker=data_uker.kd_uker 
-																			LEFT JOIN data_karyawan ON data_aset.nik=data_karyawan.nik 
-																			WHERE data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
-																		ORDER BY proc ASC");
+													$res1 = $conn->query("SELECT data_aset.*  FROM data_aset 
+																WHERE data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
+																ORDER BY proc ASC");
+													while ($row1 = $res1->fetch_assoc()) {?>
+														<tr>
+															<td scope="row"><?= $no ?></td>
+															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><?= $row1['model'] ?></td>
+															<td><?= $row1['os'] ?></td>
+															<td><?= $row1['proc'] ?></td>
+															<td><?= $row1['ramhd'] ?></td>
+															<td><?= $row1['nik'] ?></td>
+															<td><?= $row1['nama_karyawan'] ?></td>
+															<td align="center"><?= $row1['sewa'] == 0 ? "Tidak" : "Ya" ?></td>
+															<td><?php
+																$id_monitor = $row1['id_monitor'];
+																$showaset = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM data_aset  WHERE no= '$id_monitor'"));
+																echo $showaset['no_aset'];
+																?>
+															</td>
+														</tr>
+													<?php $no++;
+													} ?>
+												</tbody>
+											</table>
+											<br>
+										</div>
+										<br>
+									<?php } else if (strtoupper($kdkat) == 'CM') {	?>
+										<div class="col-md-12">
+											<p class="tebal"><?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
+											<?php
+											$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
+													where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
+											while ($rowth = $th->fetch_assoc()) {
+												echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
+											} ?>
+											<table style="width: 100%;" class="lapDetail table table-bordered table-hover table-responsive table-striped">
+												<thead>
+													<tr class="info" height="20px">
+														<th rowspan="2">No</th>
+														<th rowspan="2">No Asset</th>
+														<th rowspan="2">Model</th>
+														<th colspan="2">PIC</th>
+														<th rowspan="2">Sewa</th>
+													</tr>
+													<tr class="info">
+														<td align="center">NIK</td>
+														<td align="center">Nama</td>
+													</tr>
+												</thead>
+												<tbody>
+													<?php
+													$no = 1;
+													$res1 = $conn->query("SELECT *  FROM data_aset 
+															where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
+															ORDER BY proc ASC");
+													while ($row1 = $res1->fetch_assoc()) { ?>
+														<tr>
+															<th scope="row"><?= $no ?></th>
+															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><?= $row1['model'] ?></td>
+															<td><?= $row1['nik'] ?></td>
+															<td><?= $row1['nama_karyawan'] ?></td>
+															<td align="center"><?= $row1['sewa'] == "1" ? "Ya" : "Tidak" ?></td>
+														</tr>
+													<?php $no++;
+													} ?>
+												</tbody>
+											</table>
+											<br>
+										</div>
+										<br>
+									<?php } else { ?>
+										<div class="col-md-12">
+											<p class="tebal"><?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
+											<?php
+											if (strtoupper($kdkat) == "NB") {
+												$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
+														where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
+												while ($rowth = $th->fetch_assoc()) {
+													echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
+												}
+											} ?>
+											<table style="width: 100%;" class="lapDetail table table-striped table-bordered table-hover table-condensed">
+												<thead>
+													<tr class="info">
+														<th rowspan="2">No</th>
+														<th rowspan="2">No Asset</th>
+														<th rowspan="2">Model</th>
+														<?php
+														if ($kdkat == "nb") {
+															echo '<th colspan="3">Spesifikasi</th>';
+														} else {
+															echo '';
+														} ?>
+														<th colspan="2">PIC</th>
+													</tr>
+													<tr class="info">
+														<?php
+														if ($kdkat == "nb") { ?>
+															<td align="center">OS</td>
+															<td align="center">Processor</td>
+															<td align="center">Ram/Hdd</td>
+														<?php
+														} else {
+															echo '';
+														} ?>
+														<td align="center">NIK</td>
+														<td align="center">Nama</td>
+													</tr>
+												</thead>
+												<tbody>
+													<?php
+													$no = 1;
+													$res1 = $conn->query("SELECT *  FROM data_aset 
+																	where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
+																	ORDER BY tahun ASC");
+													while ($row1 = $res1->fetch_assoc()) { ?>
+														<tr>
+															<th scope="row"> <?= $no ?></th>
+															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><?= $row1['model'] ?></td>
+															<?php
+															if ($kdkat == "cp") {
+																echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
+															} else if ($kdkat == "nb") {
+																echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
+															} else {
+																echo '';
+															} ?>
+															<td><?= $row1['nik'] ?></td>
+															<td><?= $row1['nama_karyawan'] ?></td>
+														</tr>
+													<?php $no++;
+													} ?>
+												</tbody>
+											</table>
+											<br>
+										</div>
+										<br>
+							<?php
+									}
+								}
+							} ?>
+						</div>
+						<hr />
+					<?php }
+					$showbag = $conn->query("SELECT * FROM  data_uker_bagian where kd_uker='$kduker' OR kd_bag = '$kduker'");
+					while ($rowbag = $showbag->fetch_assoc()) {
+						$kdbag = $rowbag['kd_bag'];
+						$totalaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset 
+												where kd_uker='$kdbag'"));
+					?>
+						<div class="row">
+							<h4 class="text-center"><strong>LAPORAN <?= $rowbag['nama_bag'] ?> </strong></h4>
+							<h5 class="text-center">Total Aset = <?= $totalaset ?></h5>
+							<div class="clearfix"></div>
+							<?php
+							$no1 = 1;
+							$res = $conn->query("SELECT *  FROM data_kategori ORDER BY id ASC");
+							while ($row = $res->fetch_assoc()) {
+								$kdkat = $row['kd_kategori'];
+								$tot = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset  
+																		WHERE data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'"));
+								$no2 = 1;
+								if ($tot > 0) {
+									if (strtoupper($kdkat) == "CP") { ?>
+										<div class="col-md-12">
+											<p class="tebal"> <?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
+											<?php
+											$sql = "SELECT proc, count(proc) as totproc FROM data_aset WHERE data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc";
+											$th = $conn->query($sql);
+											while ($rowth = $th->fetch_assoc()) {
+												echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
+											} ?>
+											<table style="width: 100%;" class="lapDetail table table-responsive table-hover table-striped table-bordered">
+												<thead>
+													<tr class="info">
+														<th rowspan="2">No</th>
+														<th rowspan="2">No Asset</th>
+														<th rowspan="2">Model</th>
+														<th colspan="3">Spesifikasi</th>
+														<th colspan="2">PIC</th>
+														<th rowspan="2">Sewa</th>
+														<th rowspan="2">No.Asset Monitor</th>
+													</tr>
+													<tr class="info">
+														<td align="center">OS</td>
+														<td align="center">Processor</td>
+														<td align="center">Ram/Hdd</td>
+														<td align="center">NIK</td>
+														<td align="center">Nama</td>
+													</tr>
+												</thead>
+												<tbody>
+													<?php
+													$no = 1;
+													$res1 = $conn->query("SELECT * FROM data_aset  
+																WHERE data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'
+																ORDER BY proc ASC");
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<td scope="row"><?= $no ?></td>
@@ -445,509 +649,140 @@
 															<td><?= $row1['nik'] ?></td>
 															<td><?= $row1['nama_karyawan'] ?></td>
 															<td align="center"><?= $row1['sewa'] == 0 ? "Tidak" : "Ya" ?></td>
-															<td>
-																<?php
+															<td><?php
 																$id_monitor = $row1['id_monitor'];
 																$showaset = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM data_aset  WHERE no= '$id_monitor'"));
 																echo $showaset['no_aset'];
 																?>
 															</td>
 														</tr>
-													<?php
-														$no++;
+													<?php $no++;
 													} ?>
 												</tbody>
 											</table>
+											<br>
 										</div>
-							<?php }
+									<?php } else if (strtoupper($kdkat) == 'CM') {	?>
+										<div class="col-md-12">
+											<p class="tebal"><?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
+											<?php
+											$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
+													where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
+											while ($rowth = $th->fetch_assoc()) {
+												echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
+											} ?>
+											<table style="width: 100%;" class="lapDetail table table-bordered table-hover table-responsive table-striped lapDetail">
+												<thead>
+													<tr class="info" height="20px">
+														<th rowspan="2">No</th>
+														<th rowspan="2">No Asset</th>
+														<th rowspan="2">Model</th>
+														<th colspan="2">PIC</th>
+														<th rowspan="2">Sewa</th>
+													</tr>
+													<tr class="info">
+														<td align="center">NIK</td>
+														<td align="center">Nama</td>
+													</tr>
+												</thead>
+												<tbody>
+													<?php
+													$no = 1;
+													$res1 = $conn->query("SELECT *  FROM data_aset
+															where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'
+															ORDER BY proc ASC");
+													while ($row1 = $res1->fetch_assoc()) { ?>
+														<tr>
+															<th scope="row"><?= $no ?></th>
+															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><?= $row1['model'] ?></td>
+															<td><?= $row1['nik'] ?></td>
+															<td><?= $row1['nama_karyawan'] ?></td>
+															<td align="center"><?= $row1['sewa'] == "1" ? "Ya" : "Tidak" ?></td>
+														</tr>
+													<?php $no++;
+													} ?>
+												</tbody>
+											</table>
+											<br>
+										</div>
+									<?php } else { ?>
+										<div class="col-md-12">
+											<p class="tebal"><?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
+											<?php
+											if (strtoupper($kdkat) == "NB") {
+												$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
+														where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
+												while ($rowth = $th->fetch_assoc()) {
+													echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
+												}
+											} ?>
+											<table style="width: 100%;" class="lapDetail table table-striped table-bordered table-hover table-condensed" width="100%">
+												<thead>
+													<tr class="info">
+														<th rowspan="2">No</th>
+														<th rowspan="2">No Asset</th>
+														<th rowspan="2">Model</th>
+														<?php
+														if ($kdkat == "nb") {
+															echo '<th colspan="3">Spesifikasi</th>';
+														} else {
+															echo '';
+														} ?>
+														<th colspan="2">PIC</th>
+													</tr>
+													<tr class="info">
+														<?php
+														if ($kdkat == "nb") { ?>
+															<td align="center">OS</td>
+															<td align="center">Processor</td>
+															<td align="center">Ram/Hdd</td>
+														<?php
+														} else {
+															echo '';
+														} ?>
+														<td align="center">NIK</td>
+														<td align="center">Nama</td>
+													</tr>
+												</thead>
+												<tbody>
+													<?php
+													$no = 1;
+													$res1 = $conn->query("SELECT *  FROM data_aset
+																where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'
+																ORDER BY tahun ASC");
+													while ($row1 = $res1->fetch_assoc()) { ?>
+														<tr>
+															<th scope="row"> <?= $no ?></th>
+															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><?= $row1['model'] ?></td>
+															<?php
+															if ($kdkat == "nb") {
+																echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
+															} else {
+																echo '';
+															} ?>
+															<td><?= $row1['nik'] ?></td>
+															<td><?= $row1['nama_karyawan'] ?></td>
+														</tr>
+													<?php $no++;
+													} ?>
+												</tbody>
+											</table>
+											<br>
+										</div>
+							<?php
+									}
 								}
-							} ?>
+							}
+							?>
 						</div>
+						<hr>
 					<?php } ?>
 				</div>
 			</div>
-			<div id="tab4" class="tab-pane fade">
-			</div>
 		</div>
-
-		<div class="tables">
-			<!-- TABEL STRUKTUR 
-						<div class="table-responsive bs-example widget-shadow">
-						<h4>INFORMASI STRUKTUR</h4>
-						<div class="col-md-11">
-							<table>
-								<thead bgcolor="silver">
-									<tr>
-										<th rowspan="2">Unit Kerja</th>
-										<th colspan="2">Total Formasi</th>
-										<th colspan="8">Grade</th>
-										<th colspan="2">Terisi</th>
-									</tr>
-									<tr>
-										<td>Organik</td>
-										<td>Non Organik</td>
-	
-										<td>1</td>
-										<td>2</td>
-										<td>3</td>
-										<td>4</td>
-										<td>5</td>
-										<td>6</td>
-										<td>7</td>
-										<td>PK</td>
-										<td>Organik</td>
-										<td>Non Organik</td>
-									</tr>
-								</thead>
-								<tbody>
-									<tr align="center">
-										<td><a href="#<?= $ker['kd_uker'] ?>"><?= $ker['nama_uker'] ?></a></td>
-										<td><?= $totalformasi ?></td>
-										<td><?= $totalFormasiNonOrganik ?></td>
-										<td><?= $ker['g1'] ?></td>
-										<td><?= $ker['g2'] ?></td>
-										<td><?= $ker['g3'] ?></td>
-										<td><?= $ker['g4'] ?></td>
-										<td><?= $ker['g5'] ?></td>
-										<td><?= $ker['g6'] ?></td>
-										<td><?= $ker['g7'] ?></td>
-										<td><?= $ker['gpk'] ?></td>
-										<td><?= $terisi['totalisi'] ?></td>
-										<td><?= $totalterisiNonOrganik ?></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div class="col-md-1">
-							<form class="form-horizontal" method="POST" action="print.php" target="_blank">
-								<input name="id" id="id" type="hidden" value="<?php echo $kduker; ?>"></input>
-								<button type="submit" name="print" id="print">
-	
-									<div><i class="fa_p fa-print nav_print"></i></div>
-									<div class="clearfix"></div>
-								</button>
-							</form>
-	
-						</div>
-					</div> -->
-
+		<div id="tab4" class="tab-pane fade">
 		</div>
-		<hr>
-		<div class="tables">
-			<div class="table-responsive">
-			<?php
-			$res = $conn->query("SELECT * FROM data_kategori  ORDER BY id ASC");
-			while ($row = $res->fetch_assoc()) {
-				$kdkat = $row['kd_kategori'];
-				$tot = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset 
-											where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'"));
-
-				if ($tot > 0) {
-					if ($kdkat == 'cp') {
-						echo '					
-						<div class="col-md-12">
-						<p class="tebal"> ' . $row['nama_kategori'] . ' : ' . $tot . ' Unit</p>
-						';
-						$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-											where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-						while ($rowth = $th->fetch_assoc()) {
-							echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-						}
-						echo '
-						<table  table-layout="auto" width= "100%"  >
-							<thead bgcolor="silver">
-								<tr height="20px"  width="100%"> 
-									<th rowspan="2">No</th><th rowspan="2">No Asset</th><th rowspan="2">Model</th>';
-						if ($kdkat == "cp") {
-							echo '<th colspan="3">Spesifikasi</th>';
-						} else if ($kdkat == "nb") {
-							echo '<th colspan="3">Spesifikasi</th>';
-						} else {
-							echo '';
-						}
-						echo '<th colspan="2">PIC</th>
-									<th rowspan="2">Sewa</th>
-									<th rowspan="2">No.Asset Monitor</th>
-								</tr>
-								<tr>';
-						if ($kdkat == "cp") {
-							echo '<td align="center">OS</td><td align="center">Processor</td><td align="center">Ram/Hdd</td> ';
-						} else if ($kdkat == "nb") {
-							echo '<td align="center">OS</td><td align="center">Processor</td><td align="center">Ram/Hdd</td> ';
-						} else {
-							echo '';
-						}
-						echo '<td align="center">NIK</td><td align="center">Nama</td>
-									
-								</tr>
-							</thead>
-							<tbody>';
-						$no = 1;
-
-						$res1 = $conn->query("SELECT *, data_uker.*, data_karyawan.*  FROM data_aset 
-											LEFT JOIN data_uker ON data_aset.kd_uker=data_uker.kd_uker 
-											LEFT JOIN data_karyawan ON data_aset.nik=data_karyawan.nik 
-											where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
-											ORDER BY proc ASC");
-						while ($row1 = $res1->fetch_assoc()) {
-							echo '<tr> <th scope="row">' . $no . '</th> <td><a>' . $row1['no_aset'] . '</a></td><td>' . $row1['model'] . '</td>';
-							if ($kdkat == "cp") {
-								echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
-							} else if ($kdkat == "nb") {
-								echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
-							} else {
-								echo '';
-							}
-							echo '<td>' . $row1['nik'] . '</td>
-							<td>' . $row1['nama_karyawan'] . '</td>
-							<td align="center">';
-							if ($row1['sewa'] == "1") {
-								echo "YA";
-							} else {
-								echo "TIDAK";
-							}
-							$id_monitor = $row1['id_monitor'];
-							$showaset = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM data_aset  WHERE no= '$id_monitor'"));
-							echo '</td><td>' . $showaset['no_aset'] . '</td>
-							</tr> </tr>';
-							$no++;
-						}
-						echo '</tbody>
-						</table> 
-						<br>
-					
-					</div>';
-					} else if (($kdkat == 'cm') or ($kdkat == 'CM')) {
-						echo '					
-						<div class="col-md-12">
-						<p class="tebal"> ' . $row['nama_kategori'] . ' : ' . $tot . ' Unit</p>
-						';
-						$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-											where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-						while ($rowth = $th->fetch_assoc()) {
-							echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-						}
-						echo '
-						<table  table-layout="auto" width= "100%"  >
-							<thead bgcolor="silver">
-								<tr height="20px"  width="100%"> 
-									<th rowspan="2">No</th><th rowspan="2">No Asset</th><th rowspan="2">Model</th>
-									<th colspan="2">PIC</th>
-									<th rowspan="2">Sewa</th> 
-								</tr>
-								<tr>
-								<td align="center">NIK</td><td align="center">Nama</td>
-									
-								</tr>
-							</thead>
-							<tbody>';
-						$no = 1;
-
-						$res1 = $conn->query("SELECT *, data_uker.*, data_karyawan.*  FROM data_aset 
-											LEFT JOIN data_uker ON data_aset.kd_uker=data_uker.kd_uker 
-											LEFT JOIN data_karyawan ON data_aset.nik=data_karyawan.nik 
-											where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
-											ORDER BY proc ASC");
-						while ($row1 = $res1->fetch_assoc()) {
-							echo '
-							<tr> 
-								<th scope="row">' . $no . '</th> <td><a>' . $row1['no_aset'] . '</a></td><td>' . $row1['model'] . '</td>
-							<td>' . $row1['nik'] . '</td>
-							<td>' . $row1['nama_karyawan'] . '</td>
-							<td align="center">';
-							if ($row1['sewa'] == "1") {
-								echo "YA";
-							} else {
-								echo "TIDAK";
-							}
-
-							echo '</td> 
-							</tr>';
-							$no++;
-						}
-						echo '</tbody>
-						</table> 
-						<br>
-					
-					</div>';
-					} else {
-						echo '					
-						<div class="col-md-12">
-						<p class="tebal"> ' . $row['nama_kategori'] . ' : ' . $tot . ' Unit</p>';
-						if ($kdkat == "nb") {
-							$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-											where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-							while ($rowth = $th->fetch_assoc()) {
-								echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-							}
-						}
-						echo '
-						<table  table-layout="auto" width= "100%"  >
-							<thead bgcolor="silver">
-								<tr height="20px"  width="100%"> 
-									<th rowspan="2">No</th><th rowspan="2">No Asset</th><th rowspan="2">Model</th>';
-						if ($kdkat == "cp") {
-							echo '<th colspan="3">Spesifikasi</th>';
-						} else if ($kdkat == "nb") {
-							echo '<th colspan="3">Spesifikasi</th>';
-						} else {
-							echo '';
-						}
-						echo '<th colspan="2">PIC</th>
-								</tr>
-								<tr>';
-						if ($kdkat == "cp") {
-							echo '<td align="center">OS</td><td align="center">Processor</td><td align="center">Ram/Hdd</td> ';
-						} else if ($kdkat == "nb") {
-							echo '<td align="center">OS</td><td align="center">Processor</td><td align="center">Ram/Hdd</td> ';
-						} else {
-							echo '';
-						}
-						echo '<td align="center">NIK</td><td align="center">Nama</td> 
-								</tr>
-							</thead>
-							<tbody>';
-						$no = 1;
-						$res1 = $conn->query("SELECT *, data_uker.*, data_karyawan.*  FROM data_aset 
-											LEFT JOIN data_uker ON data_aset.kd_uker=data_uker.kd_uker 
-											LEFT JOIN data_karyawan ON data_aset.nik=data_karyawan.nik 
-											where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
-											ORDER BY tahun ASC");
-						while ($row1 = $res1->fetch_assoc()) {
-							echo '<tr> <th scope="row">' . $no . '</th> <td><a>' . $row1['no_aset'] . '</a></td><td>' . $row1['model'] . '</td>';
-							if ($kdkat == "cp") {
-								echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
-							} else if ($kdkat == "nb") {
-								echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
-							} else {
-								echo '';
-							}
-							echo '<td>' . $row1['nik'] . '</td>
-							<td>' . $row1['nama_karyawan'] . '</td> </tr> </tr>';
-							$no++;
-						}
-						echo '</tbody>
-						</table> 
-						<br>
-					
-					</div>';
-					}
-				}
-				$no1++;
-			}
-			echo '</div>';
-
-			$showbag = $conn->query("SELECT * FROM  data_uker_bagian where kd_uker='$kduker'");
-			while ($rowbag = $showbag->fetch_assoc()) {
-				$kdbag = $rowbag['kd_bag'];
-				$totalaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset 
-											where kd_uker='$kdbag'"));
-
-				echo '
-<div class="table-responsive bs-example widget-shadow">
-<h4 id="' . $rowbag['kd_bag'] . '">' . $rowbag['nama_bag'] . ' Total Aset = ' . $totalaset . '</h4>
-';
-				$no1 = 1;
-				$res = $conn->query("SELECT *  FROM data_kategori ORDER BY id ASC");
-				while ($row = $res->fetch_assoc()) {
-					$kdkat = $row['kd_kategori'];
-					$tot = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset  
-											where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'"));
-					$no2 = 1;
-					if ($tot > 0) {
-						if ($kdkat == 'cp') {
-							echo '					
-						<div class="col-md-12">
-						<p class="tebal"> ' . $row['nama_kategori'] . ' : ' . $tot . ' Unit</p>
-						';
-							$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-											where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-							while ($rowth = $th->fetch_assoc()) {
-								echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-							}
-							echo '
-						<table  table-layout="auto" width= "100%"  >
-							<thead bgcolor="silver">
-								<tr height="20px"  width="100%"> 
-									<th rowspan="2">No</th><th rowspan="2">No Asset</th><th rowspan="2">Model</th>';
-							if ($kdkat == "cp") {
-								echo '<th colspan="3">Spesifikasi</th>';
-							} else if ($kdkat == "nb") {
-								echo '<th colspan="3">Spesifikasi</th>';
-							} else {
-								echo '';
-							}
-							echo '<th colspan="2">PIC</th>
-									<th rowspan="2">Sewa</th>
-									<th rowspan="2">No.Asset Monitor</th>
-								</tr>
-								<tr>';
-							if ($kdkat == "cp") {
-								echo '<td align="center">OS</td><td align="center">Processor</td><td align="center">Ram/Hdd</td> ';
-							} else if ($kdkat == "nb") {
-								echo '<td align="center">OS</td><td align="center">Processor</td><td align="center">Ram/Hdd</td> ';
-							} else {
-								echo '';
-							}
-							echo '<td align="center">NIK</td><td align="center">Nama</td> 
-								</tr>
-							</thead>
-							<tbody>';
-							$no = 1;
-							$res1 = $conn->query("SELECT *, data_uker.*, data_karyawan.*  FROM data_aset 
-											LEFT JOIN data_uker ON data_aset.kd_uker=data_uker.kd_uker 
-											LEFT JOIN data_karyawan ON data_aset.nik=data_karyawan.nik 
-											where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' 
-											ORDER BY tahun ASC");
-							while ($row1 = $res1->fetch_assoc()) {
-								echo '<tr> <th scope="row">' . $no . '</th> <td><a>' . $row1['no_aset'] . '</a></td><td>' . $row1['model'] . '</td>';
-								if ($kdkat == "cp") {
-									echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
-								} else if ($kdkat == "nb") {
-									echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
-								} else {
-									echo '';
-								}
-								echo '<td>' . $row1['nik'] . '</td>
-							<td>' . $row1['nama_karyawan'] . '</td>
-							<td align="center">';
-								if ($row1['sewa'] == "1") {
-									echo "YA";
-								} else {
-									echo "TIDAK";
-								}
-
-								echo '</td>';
-								$id_monitor = $row1['id_monitor'];
-								$showaset = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM data_aset  WHERE no= '$id_monitor'"));
-								echo '</td><td>' . $showaset['no_aset'] . '</td>
-							</tr> </tr>';
-								$no++;
-							}
-							echo '</tbody>
-						</table> 
-						<br>
-					
-					</div>';
-						} else if (($kdkat == 'cm') or ($kdkat == 'CM')) {
-							echo '					
-						<div class="col-md-12">
-						<p class="tebal"> ' . $row['nama_kategori'] . ' : ' . $tot . ' Unit</p>
-						';
-							$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-											where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-							while ($rowth = $th->fetch_assoc()) {
-								echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-							}
-							echo '
-						<table  table-layout="auto" width= "100%"  >
-							<thead bgcolor="silver">
-								<tr height="20px"  width="100%"> 
-									<th rowspan="2">No</th><th rowspan="2">No Asset</th><th rowspan="2">Model</th>';
-
-							echo '<th colspan="2">PIC</th>
-									<th rowspan="2">Sewa</th> 
-								</tr>
-								<tr>
-									<td align="center">NIK</td><td align="center">Nama</td> 
-								</tr>
-							</thead>
-							<tbody>';
-							$no = 1;
-							$res1 = $conn->query("SELECT *, data_uker.*, data_karyawan.*  FROM data_aset 
-											LEFT JOIN data_uker ON data_aset.kd_uker=data_uker.kd_uker 
-											LEFT JOIN data_karyawan ON data_aset.nik=data_karyawan.nik 
-											where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' 
-											ORDER BY tahun ASC");
-							while ($row1 = $res1->fetch_assoc()) {
-								echo '<tr> <th scope="row">' . $no . '</th> <td><a>' . $row1['no_aset'] . '</a></td><td>' . $row1['model'] . '</td> 
-							<td>' . $row1['nik'] . '</td>
-							<td>' . $row1['nama_karyawan'] . '</td>
-							<td align="center">';
-								if ($row1['sewa'] == "1") {
-									echo "YA";
-								} else {
-									echo "TIDAK";
-								}
-
-								echo '</td> 
-							</tr> </tr>';
-								$no++;
-							}
-							echo '</tbody>
-						</table> 
-						<br>
-					
-					</div>';
-						} else {
-							echo '					
-						<div class="col-md-12">
-						<p class="tebal"> ' . $row['nama_kategori'] . ' : ' . $tot . ' Unit</p>
-						';
-							if ($kdkat == "nb") {
-								$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-											where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-								while ($rowth = $th->fetch_assoc()) {
-									echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-								}
-							}
-							echo '
-						<table  table-layout="auto" width= "100%"  >
-							<thead bgcolor="silver">
-								<tr height="20px"  width="100%"> 
-									<th rowspan="2">No</th><th rowspan="2">No Asset</th><th rowspan="2">Model</th>';
-							if ($kdkat == "cp") {
-								echo '<th colspan="3">Spesifikasi</th>';
-							} else if ($kdkat == "nb") {
-								echo '<th colspan="3">Spesifikasi</th>';
-							} else {
-								echo '';
-							}
-							echo '<th colspan="2">PIC</th>
-								</tr>
-								<tr>';
-							if ($kdkat == "cp") {
-								echo '<td align="center">OS</td><td align="center">Processor</td><td align="center">Ram/Hdd</td> ';
-							} else if ($kdkat == "nb") {
-								echo '<td align="center">OS</td><td align="center">Processor</td><td align="center">Ram/Hdd</td> ';
-							} else {
-								echo '';
-							}
-							echo '<td align="center">NIK</td><td align="center">Nama</td> 
-								</tr>
-							</thead>
-							<tbody>';
-							$no = 1;
-							$res1 = $conn->query("SELECT *, data_uker.*, data_karyawan.*  FROM data_aset 
-											LEFT JOIN data_uker ON data_aset.kd_uker=data_uker.kd_uker 
-											LEFT JOIN data_karyawan ON data_aset.nik=data_karyawan.nik 
-											where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'
-											ORDER BY tahun ASC");
-							while ($row1 = $res1->fetch_assoc()) {
-								echo '<tr> <th scope="row">' . $no . '</th> <td><a>' . $row1['no_aset'] . '</a></td><td>' . $row1['model'] . '</td>';
-								if ($kdkat == "cp") {
-									echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
-								} else if ($kdkat == "nb") {
-									echo '<td>' . $row1['os'] . '</td><td>' . $row1['proc'] . '</td><td>' . $row1['ramhd'] . '</td>';
-								} else {
-									echo '';
-								}
-								echo '<td>' . $row1['nik'] . '</td>
-							<td>' . $row1['nama_karyawan'] . '</td> </tr> </tr>';
-								$no++;
-							}
-							echo '</tbody>
-						</table> 
-						<br>
-					
-					</div>';
-						}
-					}
-					$no1++;
-				}
-				echo '</div>';
-			}
-		}
-			?>
-			</div>
-		</div>
+	<?php } ?>
+</div>

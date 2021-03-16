@@ -843,6 +843,24 @@
 <!-- LAPORAN DISTRIBUS DEPARTEMEN -->
 <script type="text/javascript">
 	$(document).ready(function() {
+		$('.lapDetail').DataTable({
+			"ordering": false,
+			dom: '<"kanan"B>t',
+			buttons: [{
+				extend: 'print',
+				text: '<span title="Free Web tutorials" class="fa fa-print" aria-hidden="true" ></span>',
+				titleAttr: 'Print',
+				columns: ':not(.select-checkbox)',
+				orientation: 'landscape'
+			}, {
+				extend: 'excel',
+				action: function(e, dt, node, config) {
+					let span = this.childNodes;
+					console.log(this);
+					$.fn.dataTable.ext.buttons.excelHtml5.action.call(this, e, dt, node, config);
+				}
+			}, 'copy', 'csv', 'pdf']
+		});
 
 		$('.laporan').DataTable({
 			"ordering": false,
@@ -854,11 +872,11 @@
 				columns: ':not(.select-checkbox)',
 				orientation: 'landscape'
 			}, {
-				extend : 'excel',
-				action : function (e, dt, node, config) {
+				extend: 'excel',
+				action: function(e, dt, node, config) {
 					let span = this.childNodes;
 					console.log(this);
-					$.fn.dataTable.ext.buttons.excelHtml5.action.call(this,e, dt, node, config);
+					$.fn.dataTable.ext.buttons.excelHtml5.action.call(this, e, dt, node, config);
 				}
 			}, 'copy', 'csv', 'pdf']
 		});
