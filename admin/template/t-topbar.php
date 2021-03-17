@@ -18,7 +18,7 @@
 				<div class="profile_details_left"><!--notifications of menu start -->
 					<ul class="nofitications-dropdown">
 						<li class="dropdown head-dpdn">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-book nav_icon"></i><span >Pengaturan</span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-gear nav_icon"></i><span >Pengaturan</span></a>
 							<ul class="dropdown-menu">
 								<li>
 									<a href="lokasi">
@@ -91,7 +91,7 @@
 							</ul>
 						</li> 
 						<li class="dropdown head-dpdn">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-book nav_icon"></i><span >Asset</span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-barcode nav_icon"></i><span >Asset</span></a>
 							<ul class="dropdown-menu">
 								<li>
 									<a href="All">

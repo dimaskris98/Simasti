@@ -1086,7 +1086,7 @@
 		drawChart();
 		drawBarChart();
 		drawKomponen();
-		drawKonsumable();
+		drawKonsum2();
 	});
 	//DATA Aset
 	function drawChart() {
@@ -1221,7 +1221,66 @@
 			}
 		};
 
-		var barChart = new google.charts.Bar(document.getElementById('consumableChart'));
+		var barChart = new google.charts.Bar(document.getElementById('caonsumableChart'));
 		barChart.draw(data, google.charts.Bar.convertOptions(options));
+	}
+
+	function drawKonsum2() {
+		<?php
+		$data = [];
+		$date = date('Y');
+		
+		$d = "";
+		$kat = [];
+		$a = $conn->query("SELECT id_consum, nama_consumable as nama FROM order_consumable as a
+		LEFT JOIN consumable as b ON a.id_consum = b.id
+		GROUP BY id_consum");
+		$idx=0;
+		while($s = mysqli_fetch_assoc($a)){
+			array_push($kat,$s['nama']);
+
+			for ($i = 1; $i <= count($bulan); $i++) {
+				$data[$idx][$i] = mysqli_fetch_assoc(
+					mysqli_query(
+						$conn,
+						"SELECT AVG(stok_temp) as rata FROM order_consumable as a          
+							WHERE tgl_order LIKE '$date-%$i-%' "
+					)
+				);
+			}
+			$idx++;
+		}
+		?>
+
+		var data = google.visualization.arrayToDataTable([
+			['Bulan', <?php foreach($kat as $k){ echo "'$k',"; } ?>'Min'],
+			<?php
+			foreach ($bulan as $k => $b) { ?>
+				['<?= $b ?>', <?= $data[0][$k]['rata'] ?>, <?= $data[1][$k]['rata'] ?>,25],
+			<?php }
+			?>
+		]);
+
+		//echo mysqli_error($conn);
+		//var_dump($data);
+		var options = {
+			title: null,
+			colors: ['red', 'green', 'blue'],
+			legend: {
+				position: 'bottom'
+			},
+			hAxis: {
+				title: 'Year',
+				titleTextStyle: {
+					color: '#333'
+				}
+			},
+			vAxis: {
+				minValue: 0
+			}
+		};
+
+		var chart = new google.visualization.AreaChart(document.getElementById('consumableChart'));
+		chart.draw(data, options);
 	}
 </script>

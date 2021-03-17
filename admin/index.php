@@ -118,8 +118,12 @@ if ( isset($_SESSION['user_login']) && $_SESSION['user_login'] != '' ) {
 				case "Proses-Pengalihan-Aset" : 	$view = "aset/pengalihan-proses.php"; 	break; 	
 				case "Scrab" : 						$view = "aset-scrab/view.php"; 			break; 	
 				case "aset-detail" : 				$view = "aset/aset-detail.php"; 		break;
-				case "processor" : 				$view = "aset/view.php"; 		break;
-				case "Camera" : 				$view = "aset/view.php"; 		break;
+				case "processor" : 					$view = "aset/view.php"; 		break;
+				case "Camera" : 					$view = "aset/view.php"; 		break;
+				
+				//Consumable
+				case "con-pembagian" : 				$view = "consumable/pembagian.php"; break;
+				case "con-order" : 				$view = "consumable/order.php"; break;
 				
 				case "dashboard" : $view = "dashboard.php"; break; 
 				case "rincian" : $view = "asetdetail.php"; break; 

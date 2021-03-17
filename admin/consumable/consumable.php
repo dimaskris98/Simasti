@@ -33,7 +33,8 @@ if (isset($_POST['simpaconsumable-edit'])) {
 	</div>
 	<div class="pull-right">
 		<form role="form" action="add" method="POST" enctype="multipart/form-data">
-			<button type="submit" name="consumable-add" class="btn btn-primary btn-md">new</button>
+			<button type="submit" name="consumable-add" class="btn btn-primary btn-md">Baru</button>
+			<a href="con-order" class="btn btn-primary btn-md">Order</a>
 		</form>
 	</div>
 </section>
@@ -52,13 +53,8 @@ if (isset($_POST['simpaconsumable-edit'])) {
 									<th>Manufaktur</th>
 									<th>No Model</th>
 									<th>No Item</th>
-									<th>Total</th>
-									<th>Sisa</th>
+									<th>Stok</th>
 									<th>Min.QTY</th>
-									<th>No.PO</th>
-									<th>Harga</th>
-									<th>Tanggl PO</th>
-									<th>Status</th>
 									<th>In/Out</th>
 									<th>Aksi</th>
 								</tr>
@@ -67,56 +63,44 @@ if (isset($_POST['simpaconsumable-edit'])) {
 								<?php
 
 								$res = $conn->query("SELECT  * FROM consumable 
-				LEFT JOIN kategori ON consumable.id_kategori=kategori.id_kategori 
-				LEFT JOIN manufaktur ON consumable.id_manufaktur=manufaktur.id_manufaktur");
+														LEFT JOIN kategori ON consumable.id_kategori=kategori.id_kategori 
+														LEFT JOIN manufaktur ON consumable.id_manufaktur=manufaktur.id_manufaktur");
 								while ($row = $res->fetch_assoc()) {
 									$string = $row['id'];
-									echo '
-					<tr>
-						<td>
-							<form action="detail" method="post">
-								<a name="tes" href="javascript:" onclick="parentNode.submit();"> ' . $row['nama_consumable'] . '</a>
-								<input type="hidden" name="consumable-detail" value="' . $row['id'] . '"/>
-								<input type="hidden" name="back-link" value="' . $mod . '" >
-							</form>
-						 </td>
-						<td>' . $row['nama_kategori'] . '</td>
-						<td>' . $row['nama_manufaktur'] . '</td>
-						<td>' . $row['no_model'] . '</td>
-						<td>' . $row['no_item'] . '</td>
-						<td>' . $row['qty'] . '</td>
-						<td>' . $row['sisa'] . '</td>
-						<td>' . $row['minqty'] . '</td>
-						<td>' . $row['po'] . '</td>
-						<td>' . number_format($row['harga'], 0, ',', '.') . '</td>
-						<td>' . $row['tgl_po'] . '</td>';
-									if ($row['sisa'] > $row['minqty']) {
-										echo '<td> <span class="label label-success" >Banyak</span></td>';
-									} else if ($row['sisa'] <= $row['minqty'] && $row['sisa'] > 1) {
-										echo '<td> <span class="label label-warning" >Sedikit</span></td>';
-									} else if ($row['sisa'] <= 1) {
-										echo '<td> <span class="label label-danger" >Habis</span></td>';
-									};
-									echo '
-						  
-						<td>';
-									if ($row['sisa'] <= 1) {
-										echo '<a href="javascript:void(0);" title=" disabled"><span class="label label-default" >ChekOut</span></a>';
-									} else {
-										echo '<a href="chekout?cons=' . $string . '" title="Edit Data"><span class="label label-success" >ChekOut</span></a>';
-									}
-									echo '</td>  
-						<td>
-							<form role="form" action="edit" method="POST" enctype="multipart/form-data">
-								<input type="hidden" name="id" value="' . $row['id'] . '" > 
-								<input type="hidden" name="back-link" value="' . $mod . '" > 		
-								<button type="submit" name="consumable-edit" class="btn btn-primary btn-sm"><span class="fa fa-pencil" aria-hidden="true"></span></button>
-								<button type="submit" name="consumable-hapus" onclick="return confirm(\'Anda yakin akan menghapus data ' . $row['nama_consumable'] . '?\')" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-							</form>
-						 </td>							
-					</tr>';
-								}
 								?>
+									<tr>
+										<td>
+											<form action="detail" method="post">
+												<a name="tes" href="javascript:" onclick="parentNode.submit();"><?= $row['nama_consumable'] ?></a>
+												<input type="hidden" name="consumable-detail" value="<?= $row['id'] ?>" />
+												<input type="hidden" name="back-link" value="<?= $mod ?>">
+											</form>
+										</td>
+										<td><?= $row['nama_kategori'] ?></td>
+										<td><?= $row['nama_manufaktur'] ?></td>
+										<td><?= $row['no_model'] ?></td>
+										<td><?= $row['no_item'] ?></td>
+										<td><?= $row['sisa'] ?></td>
+										<td><?= $row['minqty'] ?></td>
+										<td>
+											<?php
+											if ($row['sisa'] <= 1) {
+												echo '<a href="javascript:void(0);" title=" disabled"><span class="label label-default" >ChekOut</span></a>';
+											} else {
+												echo '<a href="chekout?cons=' . $string . '" title="Edit Data"><span class="label label-success" >ChekOut</span></a>';
+											}
+											?>
+										</td>
+										<td>
+											<form role="form" action="edit" method="POST" enctype="multipart/form-data">
+												<input type="hidden" name="id" value="<?= $row['id'] ?>">
+												<input type="hidden" name="back-link" value="<?= $mod ?>">
+												<button type="submit" name="consumable-edit" class="btn btn-primary btn-sm"><span class="fa fa-pencil" aria-hidden="true"></span></button>
+												<button type="submit" name="consumable-hapus" onclick="return confirm('Anda yakin akan menghapus data <?= $row['nama_consumable'] ?>?')" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+											</form>
+										</td>
+									</tr>
+								<?php }	?>
 							</tbody>
 						</table>
 
