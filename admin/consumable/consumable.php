@@ -85,9 +85,9 @@ if (isset($_POST['simpaconsumable-edit'])) {
 										<td>
 											<?php
 											if ($row['sisa'] <= 1) {
-												echo '<a href="javascript:void(0);" title=" disabled"><span class="label label-default" >ChekOut</span></a>';
+												echo '<a href="javascript:void(0);" title=" disabled"><span class="label label-default" >Bagikan</span></a>';
 											} else {
-												echo '<a href="chekout?cons=' . $string . '" title="Edit Data"><span class="label label-success" >ChekOut</span></a>';
+												echo '<a href="chekout?cons=' . $string . '" title="Edit Data"><span class="btn btn-success btn-sm" >Bagikan</span></a>';
 											}
 											?>
 										</td>

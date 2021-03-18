@@ -93,15 +93,18 @@ if ( isset($_SESSION['user_login']) && $_SESSION['user_login'] != '' ) {
 				case "kebutuhan" : $view = "kebutuhan.php"; break; 
 				
 			 
-				//Laporan
+				//Laporan ASET
 				case "laporan-aset" : 				$view = "laporan/aset-report.php"; 				break; 
-				case "laporan-aset-update" : 	$view = "laporan/aset-report-update.php"; 	break;
+				case "laporan-aset-update" : 	$view = "laporan/aset-report-update.php"; 			break;
 				case "laporan-aset-per-kategori" : 	$view = "laporan/aset-report-kategori.php"; 	break;
 				case "laporan-audit" : 				$view = "laporan/aset-report-audit.php"; 		break; 
 				case "laporan-aset-per-tahun" : 	$view = "laporan/aset-report-tahunan.php"; 		break;
 				case "laporan-aset-takbertuan" : 	$view = "laporan/aset-report-takbertuan.php"; 	break; 
 				case "laporan-aset-sewa" : 			$view = "laporan/aset-sewa.php"; 				break;
-				case "laporan-aset-kolom" : 			$view = "laporan/aset-report-proc.php"; 		break;
+				case "laporan-aset-kolom" : 			$view = "laporan/aset-report-proc.php"; 	break;
+
+				//Laporan Consumable
+				case "conlap-bulanan" :				$view = "consumable/report-bulanan.php"; 		break;
 			 
 				//Aset
 				case "All" : 						$view = "view.php"; break;

@@ -415,7 +415,7 @@
 											while ($rowth = $th->fetch_assoc()) {
 												echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
 											} ?>
-											<table style="width: 100%;" class="table table-responsive table-hover table-striped table-bordered">
+											<table style="width: 100%;" class="lapDetail table table-responsive table-hover table-striped table-bordered">
 												<thead>
 													<tr class="info">
 														<th rowspan="2">No</th>

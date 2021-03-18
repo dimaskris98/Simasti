@@ -848,7 +848,7 @@
 			dom: '<"kanan"B>t',
 			buttons: [{
 				extend: 'print',
-				text: '<span title="Free Web tutorials" class="fa fa-print" aria-hidden="true" ></span>',
+				text: '<span class="fa fa-print" aria-hidden="true"></span>',
 				titleAttr: 'Print',
 				columns: ':not(.select-checkbox)',
 				orientation: 'landscape'
@@ -867,7 +867,7 @@
 			dom: 'Bt',
 			buttons: [{
 				extend: 'print',
-				text: '<span title="Free Web tutorials" class="fa fa-print" aria-hidden="true" ></span>',
+				text: '<span class="fa fa-print" aria-hidden="true"></span>',
 				titleAttr: 'Print',
 				columns: ':not(.select-checkbox)',
 				orientation: 'landscape'
@@ -1229,22 +1229,23 @@
 		<?php
 		$data = [];
 		$date = date('Y');
-		
+
 		$d = "";
 		$kat = [];
-		$a = $conn->query("SELECT id_consum, nama_consumable as nama FROM order_consumable as a
+		$a = $conn->query("SELECT id_consum, nama_consumable as nama, b.sisa as jml FROM order_consumable as a
 		LEFT JOIN consumable as b ON a.id_consum = b.id
-		GROUP BY id_consum");
-		$idx=0;
-		while($s = mysqli_fetch_assoc($a)){
-			array_push($kat,$s['nama']);
+		GROUP BY id_consum order by jml DESC");
+		$idx = 0;
+		while ($s = mysqli_fetch_assoc($a)) {
+			array_push($kat, $s['nama']);
 
 			for ($i = 1; $i <= count($bulan); $i++) {
 				$data[$idx][$i] = mysqli_fetch_assoc(
 					mysqli_query(
 						$conn,
 						"SELECT AVG(stok_temp) as rata FROM order_consumable as a          
-							WHERE tgl_order LIKE '$date-%$i-%' "
+							WHERE tgl_order LIKE '$date-%$i-%'
+							AND id_consum = ${s['id_consum']}"
 					)
 				);
 			}
@@ -1253,10 +1254,11 @@
 		?>
 
 		var data = google.visualization.arrayToDataTable([
-			['Bulan', <?php foreach($kat as $k){ echo "'$k',"; } ?>'Min'],
+			['Bulan', <?php foreach ($kat as $k) {
+							echo "'$k',";
+						} ?> 'Min'],
 			<?php
-			foreach ($bulan as $k => $b) { ?>
-				['<?= $b ?>', <?= $data[0][$k]['rata'] ?>, <?= $data[1][$k]['rata'] ?>,25],
+			foreach ($bulan as $k => $b) { ?>['<?= $b ?>', <?= $data[0][$k]['rata'] ?>, <?= $data[1][$k]['rata'] ?>, 25],
 			<?php }
 			?>
 		]);
@@ -1283,4 +1285,51 @@
 		var chart = new google.visualization.AreaChart(document.getElementById('consumableChart'));
 		chart.draw(data, options);
 	}
+</script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#c_order_chart').change(function() {
+			var id = $(this).val();
+
+			google.charts.load('current', {
+				'packages': ['corechart', 'bar']
+			});
+			google.charts.setOnLoadCallback(function() {
+				drawKonsum2();
+			});
+
+			function drawKonsum2() {
+
+				let json = $.ajax({
+					url: "template/chart.php",
+					type: "POST",
+					dataType: "json",
+					data: {'id_consum': id},
+					async: false
+				}).responseText;
+
+				var data = google.visualization.arrayToDataTable($.parseJSON(json))
+				var options = {
+					title: null,
+					colors: ['red', 'blue'],
+					legend: {
+						position: 'bottom'
+					},
+					series:{
+						1: { lineDashStyle: [2, 2] }
+					},
+					hAxis: {
+						title: 'Bulan'
+					},
+					vAxis: {
+						title:'Rata-Rata Stok',
+						minValue: 0
+					}
+				};
+
+				var chart = new google.visualization.AreaChart(document.getElementById('consumableChart'));
+				chart.draw(data, options);
+			}
+		});
+	});
 </script>

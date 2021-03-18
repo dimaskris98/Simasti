@@ -138,9 +138,27 @@
 			</div>
 		</div>
 		<div class="row">
-		<div class="col-md-12">
+			<div class="col-md-12">
+
 				<h4 class="text-center"> Data Consumable Tahun <?= date('Y') ?></h4>
-				<div style="width: 750px; margin: auto;margin-top: 15px;margin-bottom: 15px;" id="consumableChart">
+				<div class="row">
+					<div class="col-md-2 col-md-offset-5">
+						<select name="consum_chart" id="c_order_chart" class="form-control">
+							<?php
+							$a = $conn->query("SELECT id_consum, nama_consumable as nama 
+										FROM order_consumable as a
+										LEFT JOIN consumable as b ON a.id_consum = b.id
+										GROUP BY id_consum");
+							while ($s = mysqli_fetch_assoc($a)) {
+								echo "<option value='${s['id_consum']}'>${s['nama']}</option>";
+							}
+							?>
+						</select>
+					</div>
+
+				</div>
+
+				<div style="width: 750px;height: 300px; margin: auto;margin-top: 15px;margin-bottom: 15px;" id="consumableChart">
 				</div>
 			</div>
 		</div>

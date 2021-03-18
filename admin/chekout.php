@@ -15,6 +15,11 @@
 	input.aset {
 		width: 100px;
 	}
+
+	.label-left {
+		text-align: left !important;
+		font-weight: normal;
+	}
 </style>
 
 <?php
@@ -50,15 +55,17 @@ if (isset($_POST['simpancons'])) {
 	$qty = $_POST['qty'];
 	$karyawan = $_POST['nik_sap'];
 	$tgl = date("Y-m-d h:i:sa");
-	$sql1 = "INSERT INTO consumable_user 
-			VALUES ('','$id_user', '$id_consumable', '$qty', '$karyawan', '$tgl')";
-	$query1	= mysqli_query($conn, $sql1);
 
 	$sql = "SELECT  sisa FROM consumable WHERE id ='$id_consumable'";
 	$hasil = $conn->query($sql);
 	$data = $hasil->fetch_array();
 	$sisalama = $data['sisa'];
 	$stokbaru = $sisalama - $qty;
+
+	$sql1 = "INSERT INTO consumable_user 
+			VALUES ('','$id_user', '$id_consumable', '$qty', '$karyawan', '$tgl',$stokbaru)";
+	$query1	= mysqli_query($conn, $sql1);
+
 	$sql 	= "UPDATE consumable SET sisa='$stokbaru' WHERE id='$id_consumable'";
 	$query	= mysqli_query($conn, $sql);
 	echo "<script> location.href='consumables'; </script>";
@@ -215,67 +222,59 @@ if (isset($_GET['asset'])) {
 if (isset($_GET['cons'])) {
 	$de =  $_GET['cons'];
 	$sql = "SELECT *	FROM consumable
-		LEFT JOIN kategori ON consumable.id_kategori=kategori.id_kategori 
+				LEFT JOIN kategori ON consumable.id_kategori=kategori.id_kategori 
 				LEFT JOIN manufaktur ON consumable.id_manufaktur=manufaktur.id_manufaktur
-		WHERE id='$de'";
+				WHERE id='$de'";
 	$hasil = $conn->query($sql);
 	$data = $hasil->fetch_array();
-
-	echo '
-<div class="row">
-<div class="col-md-3">
-</div>
-	<div class="col-md-8 general-grids widget-shadow">
-		<h4>' . $data['nama_consumable'] . ' (Sisa ' . $data['sisa'] . ')</h4>
-		<hr>
-		<form class="form-horizontal" method="POST" action="">
-		<input  type="hidden" name="id" id="id" value="' . $data['id'] . '" required>	
-		<table class="table">
-			<tr>
-				<td>Nama</td><td>:</td>
-				<td>' . $data['nama_kategori'] . ' ' . $data['nama_consumable'] . '</td>
-			</tr>
-			<tr>
-				<td colspan="2"> Dibagikan Ke</td>
-			</tr>
-			<tr>
-				<td>Pilih User</td><td>:</td>
-				<td>'; ?>
-	<select class="form-control selectpicker" data-live-search="true" title="Pilih Karyawan" name="nik_sap" id="nik_sap" required>
-
-		<?php
-		$res = $conn->query("SELECT * FROM data_karyawan ORDER BY nik ASC");
-		while ($row = $res->fetch_assoc()) {
-			echo '
-													<option value="' . $row['nik'] . '"> ' . $row['nama_karyawan'] . ' </option>
-													';
-		}
-
-		?>
-	</select>
-	<?php
-	echo ' </td>
-				 
-			</tr>
-			<tr>
-				<td>Qty</td><td>:</td>
-				<td><input class="aset form-control" type="text" name="qty" id="qty" required>		
-					</td>
-			</tr>
-		</table> 
-		<div class="form-group">
-						<div class="col-sm-offset-8 col-sm-6">
-						<button type="submit" class="btn btn-success" name="simpancons">Simpan</button>'; ?>
-	<a href="<?php if (isset($_SERVER['HTTP_REFERER'])) {
-					echo $_SERVER['HTTP_REFERER'];
-				} ?>" class="btn btn-primary">Kembali</a>
-<?php echo '</div>
-						<div class="clearfix"> </div>
+?>
+	<div class="row">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-8 general-grids widget-shadow">
+			<h4><?= $data['nama_consumable'] ?> (Sisa <?= $data['sisa'] ?>)</h4>
+			<hr>
+			<form class="form-horizontal" method="POST" action="">
+				<input type="hidden" name="id" id="id" value="<?= $data['id'] ?>" required>
+				<div class="form-group">
+					<label for="nama" class="control-label col-md-3 label-left">Nama</label>
+					<label for="nama" class="control-label col-md-1 label-left">:</label>
+					<label for="" class="control-label col-md-8 label-left"><?= $data['nama_kategori'] ?> <?= $data['nama_consumable'] ?></label>
+				</div>
+				<div class="form-group">
+					<label for="nama" class="control-label col-md-3 label-left">Dibagikan Ke </label>
+					<label for="nama" class="control-label col-md-1 label-left">:</label>
+					<div class="col-md-8">
+						<select class="form-control selectpicker" data-live-search="true" title="Pilih Karyawan" name="nik_sap" id="nik_sap" required>
+							<?php
+							$res = $conn->query("SELECT * FROM data_karyawan ORDER BY nik ASC");
+							while ($row = $res->fetch_assoc()) {
+								echo '<option value="' . $row['nik'] . '">' . $row['nik'] . ' - ' . $row['nama_karyawan'] . ' </option>';
+							}
+							?>
+						</select>
 					</div>
-		</form>
+				</div>
+				<div class="form-group">
+					<label for="qty" class="control-label label-left col-md-3">Jumlah</label>
+					<label class="control-label label-left col-md-1">:</label>
+					<div class="col-md-8">
+						<input class="aset form-control" type="text" name="qty" id="qty" required>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-offset-8 col-sm-6">
+						<button type="submit" class="btn btn-success" name="simpancons">Simpan</button>
+						<a href="<?php if (isset($_SERVER['HTTP_REFERER'])) {
+										echo $_SERVER['HTTP_REFERER'];
+									} ?>" class="btn btn-primary">Kembali</a>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+			</form>
+		</div>
 	</div>
-</div>
-';
+<?php
 }
 ?>
 <?php
@@ -291,7 +290,7 @@ if (isset($_GET['komp'])) {
 		<div class="col-md-3">
 		</div>
 		<div class="col-md-8 general-grids widget-shadow">
-			<h4><?= $data['nama_komponen'] . ' (Sisa ' . $data['sisa'].')' ?></h4>
+			<h4><?= $data['nama_komponen'] . ' (Sisa ' . $data['sisa'] . ')' ?></h4>
 			<hr>
 			<form class="form-horizontal" method="POST" action="">
 				<input type="hidden" name="id" id="id" value="<?= $data['id'] ?>" required>

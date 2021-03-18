@@ -1,8 +1,7 @@
 <?php
 $id = $_POST['consumable-detail'];
 $data = mysqli_fetch_array(mysqli_query($conn, "SELECT  * FROM consumable 
-				LEFT JOIN kategori ON consumable.id_kategori=kategori.id_kategori 
-				LEFT JOIN data_pemasok ON consumable.id_sup=data_pemasok.id_sup 
+				LEFT JOIN kategori ON consumable.id_kategori=kategori.id_kategori
 				LEFT JOIN manufaktur ON consumable.id_manufaktur=manufaktur.id_manufaktur WHERE id='$id'"));
 
 
@@ -115,11 +114,9 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT  * FROM consumable
 					<div>
 						<p class="ex1">Consumables are anything purchased that will be used up over time. For example, printer ink or copier paper.</p>
 						<br>
-						<p class="ex2">Purchase Date: <?php echo $data['tgl_po']; ?></p>
-						<p class="ex2">Purchase Cost: Rp <?php echo number_format($data['harga'], 0, ',', '.'); ?></p>
 						<p class="ex2">Item No.: <?php echo $data['no_item']; ?></p>
+						<p class="ex2">Item Model: <?php echo $data['no_model']; ?></p>
 						<p class="ex2">Manufacturer: <?php echo $data['nama_manufaktur']; ?></p>
-						<p class="ex2">Order Number: <?php echo $data['po']; ?> </p>
 						<br>
 					</div>
 				</div>

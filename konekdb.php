@@ -86,5 +86,3 @@ function rupiah($angka){
 	return $hasil_rupiah;
  
 }
- 
-?>
