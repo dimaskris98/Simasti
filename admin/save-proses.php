@@ -108,9 +108,21 @@ if (isset($_POST["content_kat"]) && strlen($_POST["content_kat"]) > 0) {
 
 if (isset($_POST["kat_consum"]) && strlen($_POST["kat_consum"]) > 0) {
 
-
 	$contentToSave = filter_var($_POST["kat_consum"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
 	$sql = "INSERT INTO kategori (nama_kategori,tipe)  VALUES ('$contentToSave', 'consumable')";
+
+	if (mysqli_query($conn, $sql)) {
+		$my_id = mysqli_insert_id($conn);
+		echo '<option value="' . $my_id . '" selected="selected">' . $contentToSave . ' </option>';
+	}else{
+		echo mysqli_error($conn);
+	}
+}
+
+if (isset($_POST["kat_komp"]) && strlen($_POST["kat_komp"]) > 0) {
+
+	$contentToSave = filter_var($_POST["kat_komp"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+	$sql = "INSERT INTO kategori (nama_kategori,tipe)  VALUES ('$contentToSave', 'komponen')";
 
 	if (mysqli_query($conn, $sql)) {
 		$my_id = mysqli_insert_id($conn);

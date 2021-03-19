@@ -3,8 +3,10 @@
 
 <!--footer-->
 <div class="footer">
-  <div class="col-md-12 panel-grids">
-    <p>&copy; 2018 Tekinfo | Design by <a href="https://w3layouts.com/" target="_blank">w3layouts</a></p>
+  <div class="row">
+    <div class="col-md-12 panel-grids">
+      <p>&copy; 2018 Tekinfo | Design by <a href="https://w3layouts.com/" target="_blank">w3layouts</a></p>
+    </div>
   </div>
 </div>
 <!--//footer-->
@@ -219,9 +221,9 @@
   });
 
   $("select.select3").select2({
-    placeholder : "Silahkan Pilih....",
-    allowClear : true,
-    tags:true
+    placeholder: "Silahkan Pilih....",
+    allowClear: true,
+    tags: true
   });
 </script>
 <script type="text/javascript">

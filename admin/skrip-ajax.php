@@ -175,6 +175,32 @@
 	});
 </script>
 
+<!-- KATEGORI komponen-->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#newKatKomp").click(function(e) {
+			e.preventDefault();
+			if ($("#namakat_komp").val() === '') {
+				alert("Please enter some text!");
+				return false;
+			}
+			var myData = 'kat_komp=' + $("#namakat_komp").val(); //build a post data structure
+			jQuery.ajax({
+				type: "POST", // Post / Get method
+				url: "save-proses.php", //Where form data is sent on submission
+				dataType: "text", // Data type, HTML, json etc.
+				data: myData, //Form variables
+				success: function(response) {
+					$("#kategori").append(response);
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					alert(thrownError);
+				}
+			});
+		});
+	});
+</script>
+
 
 <!-- KATEGORI-->
 <script type="text/javascript">
@@ -645,7 +671,6 @@
 			"ajax": {
 				"url": 'unit-kerja/lokasi-ajax.php',
 				"type": 'POST',
-
 			},
 
 			dom: 'Blfrtip',
@@ -863,22 +888,20 @@
 		});
 
 		$('.laporan').DataTable({
-			"ordering": false,
-			dom: 'Bt',
+			"ordering": true,
+			"searchable": true,
+			dom: 'Blftr',
+			"lengthMenu": [
+				[10, 25, 50, 100, -1],
+				[10, 25, 50, 100, "All"]
+			],
 			buttons: [{
 				extend: 'print',
 				text: '<span class="fa fa-print" aria-hidden="true"></span>',
 				titleAttr: 'Print',
 				columns: ':not(.select-checkbox)',
 				orientation: 'landscape'
-			}, {
-				extend: 'excel',
-				action: function(e, dt, node, config) {
-					let span = this.childNodes;
-					console.log(this);
-					$.fn.dataTable.ext.buttons.excelHtml5.action.call(this, e, dt, node, config);
-				}
-			}, 'copy', 'csv', 'pdf']
+			}, 'excel', 'copy', 'csv', 'pdf']
 		});
 
 		var dataTable = $('#lapDisDep').DataTable({
@@ -1304,7 +1327,9 @@
 					url: "template/chart.php",
 					type: "POST",
 					dataType: "json",
-					data: {'id_consum': id},
+					data: {
+						'id_consum': id
+					},
 					async: false
 				}).responseText;
 
@@ -1315,14 +1340,16 @@
 					legend: {
 						position: 'bottom'
 					},
-					series:{
-						1: { lineDashStyle: [2, 2] }
+					series: {
+						1: {
+							lineDashStyle: [2, 2]
+						}
 					},
 					hAxis: {
 						title: 'Bulan'
 					},
 					vAxis: {
-						title:'Rata-Rata Stok',
+						title: 'Rata-Rata Stok',
 						minValue: 0
 					}
 				};

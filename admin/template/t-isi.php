@@ -144,6 +144,7 @@
 				<div class="row">
 					<div class="col-md-2 col-md-offset-5">
 						<select name="consum_chart" id="c_order_chart" class="form-control">
+						<option value="All">All</option>
 							<?php
 							$a = $conn->query("SELECT id_consum, nama_consumable as nama 
 										FROM order_consumable as a

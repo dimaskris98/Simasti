@@ -74,9 +74,9 @@
 				<select name="uker" id="uker" class="  selectpicker" data-live-search="true" required>
 					<option>Pilih Unit Kerja</option>
 					<?php
-					$res = $conn->query("SELECT * FROM data_aset group by kd_uker");
+					$res = $conn->query("SELECT DISTINCT * FROM data_uker");
 					while ($row = $res->fetch_assoc()) {
-						echo '<option value="' . $row['kd_uker'] . '">' . $row['nama_unitkerja'] . '</option>';
+						echo '<option value="' . $row['kd_uker'] . '">' . $row['nama_uker'] . '</option>';
 					}
 					?>
 				</select>
@@ -154,7 +154,7 @@
 								while ($row = mysqli_fetch_assoc($query)) { ?>
 									<tr>
 										<td class="text-center" scope="row"><?= $no ?></td>
-										<td><?= $row['no_aset'] ?></td>
+										<td><a href="aset-detail?no=<?= $row['no'] ?>" ><?= $row['no_aset'] ?></a></td>
 										<td><?= $row['model'] ?></td>
 										<td><?= $row['nama_unitkerja'] ?></td>
 										<td><?= $row['nik'] ?></td>
@@ -395,7 +395,7 @@
 					$totalasetdep = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_uker='$kduker'"));
 					//var_dump($uker);
 					if ($f) { ?>
-						<div class="row">
+						<div class="row" id="<?= $kduker ?>">
 							<h4 class="text-center"><strong>LAPORAN <?= $uker['nama_uker'] ?> </strong></h4>
 							<h5 class="text-center">Total Aset = <?= $totalasetdep ?></h5>
 							<div class="clearfix"></div>
@@ -591,7 +591,7 @@
 						$totalaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset 
 												where kd_uker='$kdbag'"));
 					?>
-						<div class="row">
+						<div class="row" id="<?= $kdbag ?>">
 							<h4 class="text-center"><strong>LAPORAN <?= $rowbag['nama_bag'] ?> </strong></h4>
 							<h5 class="text-center">Total Aset = <?= $totalaset ?></h5>
 							<div class="clearfix"></div>
@@ -641,7 +641,7 @@
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<td scope="row"><?= $no ?></td>
-															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><a href="aset-detail?no=<?= $row1['no'] ?>"><?= $row1['no_aset'] ?></a></td>
 															<td><?= $row1['model'] ?></td>
 															<td><?= $row1['os'] ?></td>
 															<td><?= $row1['proc'] ?></td>

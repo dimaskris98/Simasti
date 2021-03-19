@@ -206,6 +206,17 @@
 										<div class="clearfix"></div>
 									</a>
 								</li>
+								<li>
+									<div class="notification_header">
+										<h3>LAPORAN KOMPONEN</h3>
+									</div>
+								</li>
+								<li>
+									<a href="komplap-bulanan">
+										<div><i class="fa fa-book nav_icon"></i>Bulanan</div>
+										<div class="clearfix"></div>
+									</a>
+								</li>
 							</ul>
 						</li>
 					</ul>

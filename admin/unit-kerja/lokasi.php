@@ -486,12 +486,13 @@ Left join data_uker_bagian ON data_aset.kd_uker=data_uker_bagian.kd_bag
 
 					?>
 
- 				<div class="col-md-8">
+ 				<div class="col-md-12">
  					<div class="box box-default">
  						<div class="box-header">
  							<h2 class="box-title"><b>View Unit Kerja</b></h2>
  							<div class="box-tools pull-right">
  								<a href="lokasi-add" class="btn btn-primary">Unit Kerja Baru</a>
+ 								<a href="lokasi-kebutuhan" class="btn btn-primary">Unit Kerja Baru</a>
  							</div>
  						</div><!-- /.box-header -->
  						<div class="box-body">

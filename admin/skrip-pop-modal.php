@@ -30,7 +30,39 @@
 	</div>
 </div>
 
+<!--Kategori KOMPONEN-->
+<div class="modal fade" id="popkategorikomponen" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="exampleModalLabel">Kategori tipe komponen</h4>
+			</div>
+			<div class="modal-body">
+				<form name="form-kategori" id="form-kategori" class="form-kategori form-horizontal" method="POST" action="">
+					<div class="form-group">
+						<label class="col-sm-5 control-label">
+							<h4>Nama kategori :</h4>
+						</label>
+						<div class="col-sm-5">
+							<input type="text" class="form-control" name="namakat_komp" id="namakat_komp">
+						</div>
+						<div class="clearfix"> </div>
+					</div>
 
+					<div class="form-group">
+						<div class="col-sm-offset-7 col-sm-5">
+							<button type="submit" class="btn btn-primary" data-dismiss="modal" name="newKatKomp" id="newKatKomp">Simpan</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+						<div class="clearfix"> </div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- SUPPLIER -->
 <div class="modal" id="popsupplier" role="dialog" aria-labelledby="exampleModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -342,7 +374,7 @@
 </div>
 
 
-<!--Pop Up pemasok-->
+<!--Pop Up MANUFAKTUR-->
 <div class="modal fade" id="popmanufacturer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
