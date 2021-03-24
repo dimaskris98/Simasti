@@ -71,7 +71,7 @@
 			</label>
 
 			<div class="col-sm-3">
-				<select name="uker" id="uker" class="  selectpicker" data-live-search="true" required>
+				<select name="uker" id="uker" class="selectpicker" data-live-search="true" required>
 					<option>Pilih Unit Kerja</option>
 					<?php
 					$res = $conn->query("SELECT DISTINCT * FROM data_uker");
@@ -154,7 +154,7 @@
 								while ($row = mysqli_fetch_assoc($query)) { ?>
 									<tr>
 										<td class="text-center" scope="row"><?= $no ?></td>
-										<td><a href="aset-detail?no=<?= $row['no'] ?>" ><?= $row['no_aset'] ?></a></td>
+										<td><a href="aset-detail?no=<?= $row['no'] ?>"><?= $row['no_aset'] ?></a></td>
 										<td><?= $row['model'] ?></td>
 										<td><?= $row['nama_unitkerja'] ?></td>
 										<td><?= $row['nik'] ?></td>
@@ -194,9 +194,7 @@
 										} else {
 											echo '<th rowspan="2" align="center">' . $row['nama_kategori'] . ' </th>';
 										}
-									}
-
-									?>
+									} ?>
 								</tr>
 								<tr class="info">
 									<th>PG</th>
@@ -415,7 +413,7 @@
 											while ($rowth = $th->fetch_assoc()) {
 												echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
 											} ?>
-											<table style="width: 100%;" class="lapDetail table table-responsive table-hover table-striped table-bordered">
+											<table id="U<?= $kduker . $kdkat ?>" style="width: 100%;" class="table table-responsive table-hover table-striped table-bordered">
 												<thead>
 													<tr class="info">
 														<th rowspan="2">No</th>
@@ -440,10 +438,10 @@
 													$res1 = $conn->query("SELECT data_aset.*  FROM data_aset 
 																WHERE data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
 																ORDER BY proc ASC");
-													while ($row1 = $res1->fetch_assoc()) {?>
+													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<td scope="row"><?= $no ?></td>
-															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><a href="aset-detail?no=<?= $row1['no'] ?>"><?= $row1['no_aset'] ?></a></td>
 															<td><?= $row1['model'] ?></td>
 															<td><?= $row1['os'] ?></td>
 															<td><?= $row1['proc'] ?></td>
@@ -462,6 +460,24 @@
 													} ?>
 												</tbody>
 											</table>
+											<script>
+												document.addEventListener("DOMContentLoaded", function() {
+													$('#U<?= $kduker . $kdkat ?>').DataTable({
+														"ordering": false,
+														dom: '<"kanan"B>t',
+														buttons: [{
+															extend: 'print',
+															text: '<span class="fa fa-print" aria-hidden="true"></span>',
+															titleAttr: 'Print',
+															columns: ':not(.select-checkbox)',
+															orientation: 'landscape'
+														}, {
+															extend: 'excel',
+															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$uker['nama_uker']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+														}, 'copy', 'csv', 'pdf']
+													});
+												});
+											</script>
 											<br>
 										</div>
 										<br>
@@ -474,7 +490,7 @@
 											while ($rowth = $th->fetch_assoc()) {
 												echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
 											} ?>
-											<table style="width: 100%;" class="lapDetail table table-bordered table-hover table-responsive table-striped">
+											<table id="U<?= $kduker . $kdkat ?>" style="width: 100%;" class="table table-bordered table-hover table-responsive table-striped">
 												<thead>
 													<tr class="info" height="20px">
 														<th rowspan="2">No</th>
@@ -497,7 +513,7 @@
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<th scope="row"><?= $no ?></th>
-															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><a href="aset-detail?no=<?= $row1['no'] ?>"><?= $row1['no_aset'] ?></a></td>
 															<td><?= $row1['model'] ?></td>
 															<td><?= $row1['nik'] ?></td>
 															<td><?= $row1['nama_karyawan'] ?></td>
@@ -507,6 +523,24 @@
 													} ?>
 												</tbody>
 											</table>
+											<script>
+												document.addEventListener("DOMContentLoaded", function() {
+													$('#U<?= $kduker . $kdkat ?>').DataTable({
+														"ordering": false,
+														dom: '<"kanan"B>t',
+														buttons: [{
+															extend: 'print',
+															text: '<span class="fa fa-print" aria-hidden="true"></span>',
+															titleAttr: 'Print',
+															columns: ':not(.select-checkbox)',
+															orientation: 'landscape'
+														}, {
+															extend: 'excel',
+															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$uker['nama_uker']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+														}, 'copy', 'csv', 'pdf']
+													});
+												});
+											</script>
 											<br>
 										</div>
 										<br>
@@ -521,7 +555,7 @@
 													echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
 												}
 											} ?>
-											<table style="width: 100%;" class="lapDetail table table-striped table-bordered table-hover table-condensed">
+											<table style="width: 100%;" id="U<?= $kduker . $kdkat ?>" class="table table-striped table-bordered table-hover table-condensed">
 												<thead>
 													<tr class="info">
 														<th rowspan="2">No</th>
@@ -558,7 +592,7 @@
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<th scope="row"> <?= $no ?></th>
-															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><a href="aset-detail?no=<?= $row1['no'] ?>"><?= $row1['no_aset'] ?></a></td>
 															<td><?= $row1['model'] ?></td>
 															<?php
 															if ($kdkat == "cp") {
@@ -575,6 +609,24 @@
 													} ?>
 												</tbody>
 											</table>
+											<script>
+												document.addEventListener("DOMContentLoaded", function() {
+													$('#U<?= $kduker . $kdkat ?>').DataTable({
+														"ordering": false,
+														dom: '<"kanan"B>t',
+														buttons: [{
+															extend: 'print',
+															text: '<span class="fa fa-print" aria-hidden="true"></span>',
+															titleAttr: 'Print',
+															columns: ':not(.select-checkbox)',
+															orientation: 'landscape'
+														}, {
+															extend: 'excel',
+															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$uker['nama_uker']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+														}, 'copy', 'csv', 'pdf']
+													});
+												});
+											</script>
 											<br>
 										</div>
 										<br>
@@ -591,7 +643,7 @@
 						$totalaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset 
 												where kd_uker='$kdbag'"));
 					?>
-						<div class="row" id="<?= $kdbag ?>">
+						<div class="row">
 							<h4 class="text-center"><strong>LAPORAN <?= $rowbag['nama_bag'] ?> </strong></h4>
 							<h5 class="text-center">Total Aset = <?= $totalaset ?></h5>
 							<div class="clearfix"></div>
@@ -613,7 +665,7 @@
 											while ($rowth = $th->fetch_assoc()) {
 												echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
 											} ?>
-											<table style="width: 100%;" class="lapDetail table table-responsive table-hover table-striped table-bordered">
+											<table style="width: 100%;" id="<?= $kdbag . $kdkat ?>" class="table table-responsive table-hover table-striped table-bordered">
 												<thead>
 													<tr class="info">
 														<th rowspan="2">No</th>
@@ -660,6 +712,24 @@
 													} ?>
 												</tbody>
 											</table>
+											<script>
+												document.addEventListener("DOMContentLoaded", function() {
+													$('#<?= $kdbag . $kdkat ?>').DataTable({
+														"ordering": false,
+														dom: '<"kanan"B>t',
+														buttons: [{
+															extend: 'print',
+															text: '<span class="fa fa-print" aria-hidden="true"></span>',
+															titleAttr: 'Print',
+															columns: ':not(.select-checkbox)',
+															orientation: 'landscape'
+														}, {
+															extend: 'excel',
+															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$rowbag['nama_bag']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+														}, 'copy', 'csv', 'pdf']
+													});
+												});
+											</script>
 											<br>
 										</div>
 									<?php } else if (strtoupper($kdkat) == 'CM') {	?>
@@ -671,7 +741,7 @@
 											while ($rowth = $th->fetch_assoc()) {
 												echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
 											} ?>
-											<table style="width: 100%;" class="lapDetail table table-bordered table-hover table-responsive table-striped lapDetail">
+											<table style="width: 100%;" id="<?= $kdbag . $kdkat ?>" class="table table-bordered table-hover table-responsive table-striped">
 												<thead>
 													<tr class="info" height="20px">
 														<th rowspan="2">No</th>
@@ -694,7 +764,7 @@
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<th scope="row"><?= $no ?></th>
-															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><a href="aset-detail?no=<?= $row1['no'] ?>"><?= $row1['no_aset'] ?></a></td>
 															<td><?= $row1['model'] ?></td>
 															<td><?= $row1['nik'] ?></td>
 															<td><?= $row1['nama_karyawan'] ?></td>
@@ -704,6 +774,24 @@
 													} ?>
 												</tbody>
 											</table>
+											<script>
+												document.addEventListener("DOMContentLoaded", function() {
+													$('#<?= $kdbag . $kdkat ?>').DataTable({
+														"ordering": false,
+														dom: '<"kanan"B>t',
+														buttons: [{
+															extend: 'print',
+															text: '<span class="fa fa-print" aria-hidden="true"></span>',
+															titleAttr: 'Print',
+															columns: ':not(.select-checkbox)',
+															orientation: 'landscape'
+														}, {
+															extend: 'excel',
+															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$rowbag['nama_bag']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+														}, 'copy', 'csv', 'pdf']
+													});
+												});
+											</script>
 											<br>
 										</div>
 									<?php } else { ?>
@@ -717,7 +805,7 @@
 													echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
 												}
 											} ?>
-											<table style="width: 100%;" class="lapDetail table table-striped table-bordered table-hover table-condensed" width="100%">
+											<table style="width: 100%;" id="<?= $kdbag . $kdkat ?>" class="table table-striped table-bordered table-hover table-condensed" width="100%">
 												<thead>
 													<tr class="info">
 														<th rowspan="2">No</th>
@@ -754,7 +842,7 @@
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<th scope="row"> <?= $no ?></th>
-															<td><a><?= $row1['no_aset'] ?></a></td>
+															<td><a href="aset-detail?no=<?= $row1['no'] ?>"><?= $row1['no_aset'] ?></a></td>
 															<td><?= $row1['model'] ?></td>
 															<?php
 															if ($kdkat == "nb") {
@@ -769,6 +857,24 @@
 													} ?>
 												</tbody>
 											</table>
+											<script>
+												document.addEventListener("DOMContentLoaded", function() {
+													$('#<?= $kdbag . $kdkat ?>').DataTable({
+														"ordering": false,
+														dom: '<"kanan"B>t',
+														buttons: [{
+															extend: 'print',
+															text: '<span class="fa fa-print" aria-hidden="true"></span>',
+															titleAttr: 'Print',
+															columns: ':not(.select-checkbox)',
+															orientation: 'landscape'
+														}, {
+															extend: 'excel',
+															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$rowbag['nama_bag']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+														}, 'copy', 'csv', 'pdf']
+													});
+												});
+											</script>
 											<br>
 										</div>
 							<?php
@@ -781,8 +887,6 @@
 					<?php } ?>
 				</div>
 			</div>
-		</div>
-		<div id="tab4" class="tab-pane fade">
 		</div>
 	<?php } ?>
 </div>

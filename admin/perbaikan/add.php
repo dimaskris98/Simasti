@@ -40,32 +40,24 @@ if (isset($_POST['save'])) {
 						<div class="form-group ">
 							<label for="name" class="col-md-3 control-label">No Aset :</label>
 							<div class="col-md-7 col-sm-12 required">
-								<?php
-
-								if (isset($_POST['aset-detail'])) {
-									$no_aset = $_POST['no_aset'];
-									$id = $_POST['id_aset'];
-								?>
-									<input class="form-control" type="text" name="no_aset" id="no_aset" value="<?= $no_aset; ?>" />
-									<input class="form-control" type="hidden" name="no_aset_id" id="no_aset_id" value="<?= $id; ?>" />
-								<?php
-								} else {
-								?>
-									<select class="form-control select2" name="no_aset_id" id="no_aset_id" required>
-										<option value=""></option>'.
-										<?php
-										$res = $conn->query("SELECT * FROM data_aset where lokasi='DI USER'");
-										while ($row = $res->fetch_assoc()) {
-											echo '
-													<option value="' . $row['no'] . '"> ' . $row['no_aset'] . ' - ' . $row['model'] . ' </option>
-													';
+								<select class="form-control select2" name="no_aset_id" id="no_aset_id" required>
+									<option value=""></option>'.
+									<?php
+									$res = $conn->query("SELECT * FROM data_aset where lokasi='DI USER'");
+									while ($row = $res->fetch_assoc()) {
+										if (isset($_POST['aset-detail'])) {
+											$id = $_POST['id_aset'];
+											if ($id == $row['no']) {
+												echo '<option selected value="' . $row['no'] . '"> ' . $row['no_aset'] . ' - ' . $row['model'] . ' </option>';
+											} else {
+												echo '<option value="' . $row['no'] . '"> ' . $row['no_aset'] . ' - ' . $row['model'] . ' </option>';
+											}
+										} else {
+											echo '<option value="' . $row['no'] . '"> ' . $row['no_aset'] . ' - ' . $row['model'] . ' </option>';
 										}
-										?>
-
-									</select>
-								<?php
-								}
-								?>
+									}
+									?>
+								</select>
 							</div>
 						</div>
 						<!-- Name -->
@@ -102,7 +94,7 @@ if (isset($_POST['save'])) {
 						<div class="form-group">
 							<label class="col-md-3 control-label" for="tiket">Tiket</label>
 							<div class="col-md-7 required">
-								<input type="text" name="tiket" id="tiket" class="form-control" placeholder="" >
+								<input type="text" name="tiket" id="tiket" class="form-control" placeholder="">
 							</div>
 
 						</div>
@@ -110,10 +102,9 @@ if (isset($_POST['save'])) {
 							<label for="name" class="col-md-3 control-label">Tanggal</label>
 							<div class="col-md-9">
 								<div class="input-group col-md-5">
-									<input type="text" class="form-control tglpicker" placeholder="Tanggal Datang" name="tgl_datang" id="tgl_datang">
+									<input type="text" class="form-control tglpicker" required placeholder="Tanggal Datang" name="tgl_datang" id="tgl_datang">
 									<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
 								</div>
-
 							</div>
 						</div>
 						<div class="box-footer text-right">

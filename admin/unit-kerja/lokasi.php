@@ -33,7 +33,7 @@
 				}
 
 				if (isset($_POST['savepermintaan'])) {
-					$idview = $_POST['idview'];		
+					$idview = $_POST['idview'];
 					$iduker = $_POST['iduker'];
 					$idbag = $_POST['idbag'];
 
@@ -131,7 +131,7 @@
  						<div class="box-header">
  							<h2 class="box-title"><b><?php echo $showuker['nama_uker']; ?></b></h2>
  							<div class="box-tools pull-right">
- 								<a href="" class="btn btn-primary">Input Permintaan</a>
+ 								<a href="lokasi-kebutuhan?id=<?= $kd_uker ?>" class="btn btn-primary">Input Permintaan</a>
  								<a href="lokasi" class="btn btn-primary">Back</a>
  							</div>
  						</div><!-- /.box-header -->
@@ -145,7 +145,7 @@
  												<tr>
  													<th style="text-align:center;" rowspan="2">No.</th>
  													<th rowspan="2" align="center">Nama Unit Kerja</th>
- 													<th style="text-align:center;" colspan="7">Jumlah Aset</th>
+ 													<th style="text-align:center;" colspan="8">Jumlah Aset</th>
  												</tr>
  												<tr>
  													<?php
@@ -157,48 +157,43 @@
  												</tr>
  											</thead>
  											<tbody>
+ 												<tr>
+ 													<td> 1 </td>
+ 													<td>
+ 														<a href="lokasi?aset=<?= $showuker['kd_uker'] ?>" title="Detail Aset"><?= $showuker['nama_uker'] ?></a>
+ 													</td>
+ 													<?php
+														$res = $conn->query("SELECT * FROM data_kategori ");
+														while ($row = $res->fetch_assoc()) {
+
+															$idkat = $row['kd_kategori'];
+															$isi = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_kategori='$idkat' AND kd_uker='$kd_uker'"));
+															echo '<td style="text-align:center;">' . $isi . '</td>';
+														}
+														?>
+ 												</tr>
  												<?php
-													echo '<tr>
-						  								<td> 1 </td>
-						 <td >	 	 
-						 <a href="lokasi?aset=' . $showuker['kd_uker'] . '" title="Detail Aset">' . $showuker['nama_uker'] . '</a>
-						 </td> ';
-
-													$res = $conn->query("SELECT * FROM data_kategori ");
-													while ($row = $res->fetch_assoc()) {
-
-														$idkat = $row['kd_kategori'];
-														$isi = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_kategori='$idkat' AND kd_uker='$kd_uker'"));
-
-														echo '<td style="text-align:center;">' . $isi . '</td>';
-													}
-													echo '	 						
-					</tr>';
 													$no = 2;
-													$res = $conn->query("SELECT  * FROM data_uker_bagian where kd_uker='$kd_uker'");
+													$res = $conn->query("SELECT * FROM data_uker_bagian where kd_uker='$kd_uker'");
 													while ($row = $res->fetch_assoc()) {
 														$kd_bag = $row['kd_bag'];
-														echo '<tr>
-						  <td>' . $no . '</td>
-					 <td >	 	 
-						 <a href="lokasi?aset=' . $row['kd_bag'] . '" title="Detail Aset">' . $row['nama_bag'] . '</a></td>
-						 <form name="formates" role="form" action="" method="POST" enctype="multipart/form-data">
-						 ';
-														$res1 = $conn->query("SELECT * FROM data_kategori ");
-														while ($row1 = $res1->fetch_assoc()) {
-															$idkat = $row1['kd_kategori'];
-															$isi2 = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_kategori='$idkat' AND kd_uker='$kd_bag'"));
-															$a = "SELECT * FROM data_aset where kd_kategori='$idkat' AND kd_uker='$kd_bag'";
-
-															echo '<td style="text-align:center;">' . $isi2 . '</td>';
-														}
-														echo '	 						
-					</tr>	
-					 ';
-														$no++;
-													}
-
 													?>
+ 													<tr>
+ 														<td><?= $no++ ?></td>
+ 														<td>
+ 															<a href="lokasi?aset=<?= $row['kd_bag'] ?>" title="Detail Aset"><?= $row['nama_bag'] ?></a>
+ 														</td>
+ 														<form name="formates" role="form" action="" method="POST" enctype="multipart/form-data">
+ 															<?php
+																$res1 = $conn->query("SELECT * FROM data_kategori ");
+																while ($row1 = $res1->fetch_assoc()) {
+																	$idkat = $row1['kd_kategori'];
+																	$isi2 = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_kategori='$idkat' AND kd_uker='$kd_bag'"));
+																	$a = "SELECT * FROM data_aset where kd_kategori='$idkat' AND kd_uker='$kd_bag'";
+																	echo '<td style="text-align:center;">' . $isi2 . '</td>';
+																} ?>
+ 													</tr>
+ 												<?php } ?>
  											</tbody>
  										</table>
  									</div>
@@ -206,177 +201,7 @@
  							</div>
  						</div> <!-- /.box-body-->
  					</div> <!-- /.box-default-->
- 				</div> <!-- /.col-md-9-->
- 				<div class="col-md-12">
- 					<div class="box box-default">
- 						<div class="box-header">
- 							<h2 class="box-title"><b>Tabel Permintaan</b></h2>
-
- 						</div><!-- /.box-header -->
- 						<!-- /.box-header -->
- 						<div class="box-body">
-
- 							<table class=" table table-striped snipe-table">
- 								<thead>
- 									<tr>
- 										<th style="text-align: center;" rowspan="2">No.</th>
- 										<th rowspan="2" style="text-align: center;">Nama Unit Kerja</th>
- 										<th style="text-align: center;" colspan="8">Permintaan</th>
- 										<th style="text-align: center;" rowspan="2">Action</th>
- 									</tr>
- 									<tr>
- 										<?php
-											$res = $conn->query("SELECT * FROM data_kategori ");
-											while ($row = $res->fetch_assoc()) {
-												echo '<th  style="text-align:center;">' . $row['nama_kategori'] . ' </th>';
-											}
-
-											?>
-
- 									</tr>
-
- 								</thead>
- 								<tbody>
-
-
-
- 									<?php
-										echo '<tr>
-						 
-						  <td> 1 </td>
-						<td >	 	 
-						 <a href="lokasi?aset=' . $showuker['kd_uker'] . '" title="Detail Unit Kerja">' . $showuker['nama_uker'] . '</a></td>
-						 <form name="formates" role="form" action="" method="POST" enctype="multipart/form-data">
-						 ';
-
-										$res1 = $conn->query("SELECT * FROM data_kategori ");
-										while ($row1 = $res1->fetch_assoc()) {
-
-											$idkat = $row1['kd_kategori'];
-											$isi = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM kebutuhan where id_kategori='$idkat' AND id_uker='$kd_uker'"));
-											$res2 = $conn->query("SELECT * FROM kebutuhan where id_kategori='$idkat' AND id_uker='$kd_uker'");
-											if ($isi == 0) {
-										?>
- 											<td style="text-align:center;">
-
- 												<input class="form-control" type="hidden" name="idbag" id="idbag" value="" />
- 												<input class="form-control" type="hidden" name="idview" id="idview" value="<?php echo $kd_uker; ?> " />
- 												<input class="form-control" type="hidden" name="iduker" id="iduker" value="<?php echo $kd_uker; ?> " />
- 												<div class="col-sm-10"><input class="form-control " type="number" name="<?php echo $idkat; ?>" id="<?php echo $idkat; ?>" value=" " /></div>
- 											</td>
-
-
- 											<?php
-											} else {
-												while ($row2 = $res2->fetch_assoc()) {
-												?>
-
- 												<td style="text-align:center;" contenteditable="true" onBlur="saveToDatabase(this,'qty','<?php echo $row2['id']; ?>')" onClick="showEdit(this);"><?php echo $row2['qty']; ?></td>
-
-
-
- 											<?php
-
-
-
-												}
-											}
-										}
-
-
-										echo '
-							<td  style="text-align:center;">';
-
-										if ($isi == 0) {
-											echo '<button type="submit" name="savepermintaan" id="save" class="btn-sm btn btn-success"><i class="fa fa-save icon-white"></i></button>';
-										} else {
-											echo '<button type="submit" name="savepermintaan" id="save" class="btn-sm btn btn-success disabled"><i class="fa fa-save icon-white"></i></button>';
-										}
-
-
-
-										echo '</form>
-						 
-							 
-								</td>							
-							</tr>';
-
-
-										$no = 2;
-										$res = $conn->query("SELECT  * FROM data_uker_bagian where kd_uker='$kd_uker'");
-										while ($row = $res->fetch_assoc()) {
-											$kd_bag = $row['kd_bag'];
-
-
-											echo '<tr>
-						 
-						  <td>' . $no . '</td>
-						 
-					 <td >	 	 
-						 <a href="lokasi?aset=' . $row['kd_bag'] . '" title="Detail Unit Kerja">' . $row['nama_bag'] . '</a></td>
-						 <form name="formates" role="form" action="" method="POST" enctype="multipart/form-data">
-						 ';
-
-											$res1 = $conn->query("SELECT * FROM data_kategori ");
-											while ($row1 = $res1->fetch_assoc()) {
-
-												$idkat = $row1['kd_kategori'];
-												$isi = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM kebutuhan where id_kategori='$idkat' AND id_uker='$kd_bag'"));
-												$res2 = $conn->query("SELECT * FROM kebutuhan where id_kategori='$idkat' AND id_uker='$kd_bag'");
-												if ($isi == 0) {
-												?>
- 												<td style="text-align:center;">
- 													<input class="form-control" type="hidden" name="idbag" id="idbag" value="<?php echo $kd_bag; ?> " />
- 													<input class="form-control" type="hidden" name="iduker" id="iduker" value="" />
- 													<input class="form-control" type="hidden" name="idview" id="idview" value="<?php echo $kd_uker; ?> " />
- 													<div class="col-sm-10"><input class="form-control " type="number" name="<?php echo $idkat; ?>" id="<?php echo $idkat; ?>" value=" " /></div>
- 												</td>
-
-
- 												<?php
-												} else {
-													while ($row2 = $res2->fetch_assoc()) {
-													?>
-
- 													<td style="text-align:center;" contenteditable="true" onBlur="saveToDatabase(this,'qty','<?php echo $row2['id']; ?>')" onClick="showEdit(this);"><?php echo $row2['qty']; ?></td>
-
-
-
- 									<?php
-
-
-
-													}
-												}
-											}
-
-
-											echo '
-							<td  style="text-align:center;">';
-
-											if ($isi == 0) {
-												echo '<button type="submit" name="savepermintaan" id="save" class="btn-sm btn btn-success"><i class="fa fa-save icon-white"></i></button>';
-											} else {
-												echo '<button type="submit" name="savepermintaan" id="save" class="btn-sm btn btn-success disabled"><i class="fa fa-save icon-white"></i></button>';
-											}
-
-
-
-											echo '</form>
-						 
-							 
-								</td>							
-							</tr>';
-											$no++;
-										}
-
-										?>
- 								</tbody>
- 							</table>
-
- 						</div> <!-- /.box-body-->
- 					</div> <!-- /.box-default-->
- 				</div> <!-- /.col-md-9-->
+ 				</div> <!-- /.col-md-12-->
 
  			<?php
 				} else if (isset($_GET['aset'])) {
@@ -492,7 +317,7 @@ Left join data_uker_bagian ON data_aset.kd_uker=data_uker_bagian.kd_bag
  							<h2 class="box-title"><b>View Unit Kerja</b></h2>
  							<div class="box-tools pull-right">
  								<a href="lokasi-add" class="btn btn-primary">Unit Kerja Baru</a>
- 								<a href="lokasi-kebutuhan" class="btn btn-primary">Unit Kerja Baru</a>
+ 								<a href="lokasi-kebutuhan" class="btn btn-primary">Input Permintaan</a>
  							</div>
  						</div><!-- /.box-header -->
  						<div class="box-body">

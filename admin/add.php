@@ -10,17 +10,24 @@ if (isset($_POST['consumable-add']))
 
 if (isset($_POST['simpanconsumable'])){
 	$nama=$_POST['nama'];
+	$warna=$_POST['warna'];
 	$kategori=$_POST['kategori'];
 	$manufaktur=$_POST['manufaktur'];
 	$model=$_POST['model'];
 	$item=$_POST['item'];
+	$sisa=$_POST['sisa'];
 	$minqty=$_POST['minqty'];
+	$keterangan=$_POST['keterangan'];
 //Memasukkan data
 $sql = "INSERT INTO consumable 
 VALUES 
-('', '$nama', '$kategori', '$manufaktur', '$model', '$item',0, '$minqty')";
-$query	= mysqli_query($conn,$sql); 
- echo '<script>window.location="consumables"</script>';
+('', '$nama', '$kategori', '$manufaktur', '$warna', '$item', '$model',$sisa, '$minqty','$keterangan')";
+$query	= mysqli_query($conn,$sql);
+if($query){
+	echo '<script>window.location="consumables"</script>';
+}else{
+	echo $conn->error;
+}
 } 
 
 

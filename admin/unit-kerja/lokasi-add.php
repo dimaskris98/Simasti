@@ -57,7 +57,6 @@ if (isset($_POST["addLokasi"])) {
                                 </div>
                             </div>
 
-
                         </div>
                         <div class="box-header with-border">
                             <h2 class="box-title"><b>Tambah Unit Kerja Bagian</b></h2>

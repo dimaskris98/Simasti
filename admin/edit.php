@@ -3,8 +3,6 @@
 	<div id="webui">
 		<div class="row">
 			<?php
-
-
 			if (isset($_POST['consumable-hapus'])) {
 				$id = $_POST['id'];
 				$sql 	= 'delete from consumable where id="' . $id . '"';

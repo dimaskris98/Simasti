@@ -196,6 +196,12 @@
 									</a>
 								</li>
 								<li>
+									<a href="laporan-perbaikan">
+										<div><i class="fa fa-book nav_icon"></i>Perbaikan Aset</div>
+										<div class="clearfix"></div>
+									</a>
+								</li>
+								<li>
 									<div class="notification_header">
 										<h3>LAPORAN CONSUMABLE</h3>
 									</div>

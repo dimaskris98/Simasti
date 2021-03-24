@@ -62,7 +62,7 @@
     autoclose: true,
     todayHighlight: true,
     minViewMode: "date"
-  });
+  }).datepicker("setDate",new Date());
 </script>
 
 

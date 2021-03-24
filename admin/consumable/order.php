@@ -35,6 +35,10 @@ if (isset($_POST['submit'])) {
         echo "<script> alert('$message') </script>";
     }
 }
+$id="NULL";
+if(isset($_GET['id'])){
+    $id = $_GET['id'];
+}
 
 ?>
 
@@ -67,10 +71,10 @@ if (isset($_POST['submit'])) {
                                     <select name="id_con" id="id_con" title="Pilih Consumable" class="form-control select2" required>
                                         <option value=""></option>
                                         <?php
-                                        $sql = "SELECT id,nama_consumable as nama FROM consumable WHERE sisa > 0";
+                                        $sql = "SELECT id,kode_item,warna,nama_consumable as nama FROM consumable";
                                         $query = $conn->query($sql);
                                         while ($row = mysqli_fetch_assoc($query)) { ?>
-                                            <option value="<?= $row['id'] ?>"><?= $row['nama'] ?></option>
+                                            <option value="<?= $row['id'] ?>" <?= $id==$row['id']?"selected":"" ?> ><?= $row['kode_item']." - ".$row['nama']." - ".$row['warna'] ?></option>
                                         <?php
                                         }
                                         ?>

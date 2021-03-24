@@ -50,7 +50,7 @@ if (isset($_POST['hapus'])) {
 									<tr>
 										<form role="form" action="" method="POST" enctype="multipart/form-data">
 											<input type="hidden" name="idd" value="<?= $row['id'] ?>">
-											<td><a href="komponen-detail?detil=<?= $row['id'] ?>" title="Detail Aset"><?= $row['nama_komponen'] ?></a></td>
+											<td><a href="komponen-detail?id=<?= $row['id'] ?>" title="Detail Aset"><?= $row['nama_komponen'] ?></a></td>
 											<td><?= $row['nama_kategori'] ?></td>
 											<td><?= $row['sisa'] ?></td>
 											<td><?= $row['min_qty'] ?></td>

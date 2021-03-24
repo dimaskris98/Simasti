@@ -1100,263 +1100,202 @@
 		});
 	})
 </script>
-
+<!-- CHART -->
 <script type="text/javascript">
-	google.charts.load('current', {
-		'packages': ['corechart', 'bar']
-	});
-	google.charts.setOnLoadCallback(function() {
-		drawChart();
-		drawBarChart();
-		drawKomponen();
-		drawKonsum2();
-	});
-	//DATA Aset
-	function drawChart() {
+	$(document).ready(function() {
+		google.charts.load('current', {
+			'packages': ['corechart', 'bar']
+		});
+		google.charts.setOnLoadCallback(function() {
+			drawChart();
+			drawBarChart();
+			drawKomponen();
+			drawKonsum2();
+		});
 
-		var data = google.visualization.arrayToDataTable([
-			['Merk', 'sdsdsdsdsds'],
-			<?php
-			$result = $conn->query("SELECT * FROM  data_kategori");
-			while ($row = $result->fetch_assoc()) {
-				$kategori = $row['kd_kategori'];
-				$total = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_kategori = '$kategori'"));
-			?>['<?= $row['nama_kategori']; ?> <?= "(" . $total . ")"; ?>', <?= $total; ?>],
-			<?php
-			}
-			?>
-		]);
+		//DATA Aset
+		function drawChart() {
 
-		var options = {
-			width: 700,
-			height: 300,
-			is3D: true,
-		};
+			var data = google.visualization.arrayToDataTable([
+				['Merk', 'sdsdsdsdsds'],
+				<?php
+				$result = $conn->query("SELECT * FROM  data_kategori");
+				while ($row = $result->fetch_assoc()) {
+					$kategori = $row['kd_kategori'];
+					$total = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_kategori = '$kategori'"));
+				?>['<?= $row['nama_kategori']; ?> <?= "(" . $total . ")"; ?>', <?= $total; ?>],
+				<?php
+				}
+				?>
+			]);
 
-		var piechart = new google.visualization.PieChart(document.getElementById('piechart1'));
-		piechart.draw(data, options);
+			var options = {
+				animation: {
+					startup: true,
+					duration: 1000,
+					easing: 'out',
+				},
+				width: 700,
+				height: 300,
+				is3D: true,
+			};
+
+			var piechart = new google.visualization.PieChart(document.getElementById('piechart1'));
+			piechart.draw(data, options);
 
 
-	}
-	// DATA PERBAIKAN
-	function drawBarChart() {
-		<?php
-		$data = [];
-		$date = date('Y');
-		for ($i = 1; $i <= count($bulan); $i++) {
-			$data[$i] = mysqli_fetch_assoc(
-				mysqli_query(
-					$conn,
-					"SELECT distinct count(keluhan) as total FROM perbaikan          
-                        WHERE tgl_masuk LIKE '$date-%$i-__'"
-				)
-			);
 		}
-		//echo mysqli_error($conn);
-		//var_dump($data);
-		?>
-
-		var data = google.visualization.arrayToDataTable([
-			['Bulan', 'Keluhan'],
+		// DATA PERBAIKAN
+		function drawBarChart() {
 			<?php
-			foreach ($data as $key => $value) { ?>['<?= $bulan[$key] ?>', <?= $value['total'] ?>],
-			<?php }
-			?>
-		]);
-
-		var options = {
-			width: 500,
-			height: 300,
-			bar: {
-				groupWidth: "75%"
-			},
-			legend: {
-				position: "none"
-			}
-		};
-
-		var barChart = new google.charts.Bar(document.getElementById('perbaikanChart'));
-		barChart.draw(data, google.charts.Bar.convertOptions(options));
-	}
-	// DATA KOMPONEN
-	function drawKomponen() {
-		<?php
-		$data = [];
-		$sql = "SELECT nama_kategori, SUM(a.sisa) as total FROM komponen as a          
-		LEFT JOIN kategori as b ON a.id_kategori = b.id_kategori Group By a.id_kategori";
-		$q = mysqli_query($conn, $sql);
-		while ($v = mysqli_fetch_assoc($q)) {
-			array_push($data, $v);
-		}
-
-		//echo mysqli_error($conn);
-		//var_dump($data);
-		?>
-
-		var data = google.visualization.arrayToDataTable([
-			['Kategori', 'Total'],
-			<?php
-			foreach ($data as $key => $value) { ?>['<?= $value['nama_kategori'] . ' (' . $value['total'] . ')' ?>', <?= $value['total'] ?>],
-			<?php }
-			?>
-		]);
-
-		var options = {
-			width: 700,
-			height: 300,
-			is3D: true,
-		};
-
-		var chart = new google.visualization.PieChart(document.getElementById('komponenChart'));
-		chart.draw(data, options);
-	}
-	// DATA KONSUMABLE
-	function drawKonsumable() {
-
-		<?php
-		$data = [];
-		$sql = "SELECT nama_consumable, SUM(a.sisa) as total FROM consumable as a GROUP BY nama_consumable";
-		$q = mysqli_query($conn, $sql);
-		while ($v = mysqli_fetch_assoc($q)) {
-			array_push($data, $v);
-		}
-
-		//echo mysqli_error($conn);
-		//var_dump($data);
-		?>
-
-		var data = google.visualization.arrayToDataTable([
-			['Kategori', 'Stok'],
-			<?php
-			foreach ($data as $key => $value) { ?>['<?= $value['nama_consumable'] ?>', <?= $value['total'] ?>],
-			<?php }
-			?>
-		]);
-
-		var options = {
-			width: 500,
-			height: 300,
-			bar: {
-				groupWidth: "75%"
-			},
-			legend: {
-				position: "none"
-			}
-		};
-
-		var barChart = new google.charts.Bar(document.getElementById('caonsumableChart'));
-		barChart.draw(data, google.charts.Bar.convertOptions(options));
-	}
-
-	function drawKonsum2() {
-		<?php
-		$data = [];
-		$date = date('Y');
-
-		$d = "";
-		$kat = [];
-		$a = $conn->query("SELECT id_consum, nama_consumable as nama, b.sisa as jml FROM order_consumable as a
-		LEFT JOIN consumable as b ON a.id_consum = b.id
-		GROUP BY id_consum order by jml DESC");
-		$idx = 0;
-		while ($s = mysqli_fetch_assoc($a)) {
-			array_push($kat, $s['nama']);
-
+			$data = [];
+			$date = date('Y');
 			for ($i = 1; $i <= count($bulan); $i++) {
-				$data[$idx][$i] = mysqli_fetch_assoc(
+				$data[$i] = mysqli_fetch_assoc(
 					mysqli_query(
 						$conn,
-						"SELECT AVG(stok_temp) as rata FROM order_consumable as a          
-							WHERE tgl_order LIKE '$date-%$i-%'
-							AND id_consum = ${s['id_consum']}"
+						"SELECT distinct count(keluhan) as total FROM perbaikan          
+                        WHERE tgl_masuk LIKE '$date-%$i-__'"
 					)
 				);
 			}
-			$idx++;
-		}
-		?>
-
-		var data = google.visualization.arrayToDataTable([
-			['Bulan', <?php foreach ($kat as $k) {
-							echo "'$k',";
-						} ?> 'Min'],
-			<?php
-			foreach ($bulan as $k => $b) { ?>['<?= $b ?>', <?= $data[0][$k]['rata'] ?>, <?= $data[1][$k]['rata'] ?>, 25],
-			<?php }
+			//echo mysqli_error($conn);
+			//var_dump($data);
 			?>
-		]);
 
-		//echo mysqli_error($conn);
-		//var_dump($data);
-		var options = {
-			title: null,
-			colors: ['red', 'green', 'blue'],
-			legend: {
-				position: 'bottom'
-			},
-			hAxis: {
-				title: 'Year',
-				titleTextStyle: {
-					color: '#333'
+			var data = google.visualization.arrayToDataTable([
+				['Bulan', 'Keluhan'],
+				<?php
+				foreach ($data as $key => $value) { ?>['<?= $bulan[$key] ?>', <?= $value['total'] ?>],
+				<?php }
+				?>
+			]);
+
+			var options = {
+				width: "100%",
+				height: 300,
+				animation: {
+					startup: true,
+					duration: 1000,
+					easing: 'out',
+				},
+				hAxis: {
+					title: 'Bulan'
+				},
+				vAxis: {
+					title: 'Keluhan',
+				},
+				bar: {
+					groupWidth: "75%"
+				},
+				legend: {
+					position: "none"
 				}
-			},
-			vAxis: {
-				minValue: 0
+			};
+
+			var barChart = new google.visualization.ColumnChart(document.getElementById('perbaikanChart'));
+			barChart.draw(data, options);
+		}
+		// DATA KOMPONEN
+		function drawKomponen() {
+			<?php
+			$data = [];
+			$sql = "SELECT nama_kategori, SUM(a.sisa) as total FROM komponen as a          
+					LEFT JOIN kategori as b ON a.id_kategori = b.id_kategori Group By a.id_kategori";
+			$q = mysqli_query($conn, $sql);
+			while ($v = mysqli_fetch_assoc($q)) {
+				array_push($data, $v);
 			}
-		};
 
-		var chart = new google.visualization.AreaChart(document.getElementById('consumableChart'));
-		chart.draw(data, options);
-	}
-</script>
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('#c_order_chart').change(function() {
-			var id = $(this).val();
+			//echo mysqli_error($conn);
+			//var_dump($data);
+			?>
 
-			google.charts.load('current', {
-				'packages': ['corechart', 'bar']
-			});
-			google.charts.setOnLoadCallback(function() {
-				drawKonsum2();
-			});
+			var data = google.visualization.arrayToDataTable([
+				['Kategori', 'Total'],
+				<?php
+				foreach ($data as $key => $value) { ?>['<?= $value['nama_kategori'] . ' (' . $value['total'] . ')' ?>', <?= $value['total'] ?>],
+				<?php }
+				?>
+			]);
 
-			function drawKonsum2() {
+			var options = {
+				animation: {
+					startup: true,
+					duration: 1000,
+					easing: 'out',
+				},
+				width: 700,
+				height: 300,
+				is3D: true,
+			};
 
-				let json = $.ajax({
-					url: "template/chart.php",
-					type: "POST",
-					dataType: "json",
-					data: {
-						'id_consum': id
-					},
-					async: false
-				}).responseText;
+			var chart = new google.visualization.PieChart(document.getElementById('komponenChart'));
+			chart.draw(data, options);
+		}
 
-				var data = google.visualization.arrayToDataTable($.parseJSON(json))
-				var options = {
-					title: null,
-					colors: ['red', 'blue'],
-					legend: {
-						position: 'bottom'
-					},
-					series: {
-						1: {
-							lineDashStyle: [2, 2]
-						}
-					},
-					hAxis: {
-						title: 'Bulan'
-					},
-					vAxis: {
-						title: 'Rata-Rata Stok',
-						minValue: 0
+
+		function drawKonsum2(id = "All") {
+
+			let json = $.ajax({
+				url: "template/chart.php",
+				type: "POST",
+				dataType: "json",
+				data: {
+					'id_consum': id
+				},
+				async: false
+			}).responseText;
+
+			var data = google.visualization.arrayToDataTable($.parseJSON(json));
+			if (id == "All") {
+				var series = {}
+			} else {
+				var series = {
+					1: {
+						lineDashStyle: [2, 2]
 					}
 				};
-
-				var chart = new google.visualization.AreaChart(document.getElementById('consumableChart'));
-				chart.draw(data, options);
 			}
+
+			var options = {
+				title: null,
+				animation: {
+					duration: 1000,
+					easing: 'out',
+					startup: true,
+				},
+				legend: {
+					position: 'bottom'
+				},
+				series: series,
+				hAxis: {
+					title: 'Bulan'
+				},
+				vAxis: {
+					title: 'Rata-rata Stok',
+					minValue: 0
+				}
+			};
+
+			var chart = new google.visualization.LineChart(document.getElementById('consumableChart'));
+			chart.draw(data, options);
+		}
+
+		$('#c_order_chart').on("change", function() {
+			var id = $(this).val();
+			drawKonsum2(id);
 		});
-	});
+	})
+
+	function base64ToArrayBuffer(_base64Str) {
+		var binaryString = window.atob(_base64Str);
+		var binaryLen = binaryString.length;
+		var bytes = new Uint8Array(binaryLen);
+		for (var i = 0; i < binaryLen; i++) {
+			var ascii = binaryString.charCodeAt(i);
+			bytes[i] = ascii;
+		}
+		return bytes;
+	}
 </script>

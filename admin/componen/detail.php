@@ -1,5 +1,5 @@
 <?php
-$id = $_GET['detil'];
+$id = $_GET['id'];
 $data = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM komponen 
 				LEFT JOIN kategori ON komponen.id_kategori=kategori.id_kategori WHERE id='$id'"));
 
@@ -101,8 +101,6 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM komponen
 					</div>
 				</div>
 			</div>
-
-
 		</div>
 	</div>
 </div>

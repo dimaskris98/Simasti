@@ -1,3 +1,12 @@
+<style>
+.open ul li {
+	margin-bottom: 0px!important;
+	border: none!important;
+	font-size: 14px;
+	padding-bottom: 0px;
+}
+</style>
+
 <div class="row">
 	<!-- panel -->
 	<div class="col-lg-3 col-xs-6">
@@ -32,8 +41,8 @@
 		<!-- small box -->
 		<div class="small-box bg-orange">
 			<div class="inner">
-				<h3><?php echo $totalaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM aksesoris")); ?></h3>
-				<p>total accessories</p>
+				<h3><?php echo $totalaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM komponen")); ?></h3>
+				<p>total komponen</p>
 			</div>
 			<div class="icon">
 				<i class="fa fa-keyboard-o"></i>
@@ -78,11 +87,8 @@
 					} else {
 						$hasil = 0;
 					}
-
 					if ($pcsewa > 0) {
 				?>
-
-
 						<li><?php echo $row['nama_kategori'] . " - " . $totalper . " Unit"; ?>
 
 							<span class="pull-right"><?php echo $hasil; ?>%</span>
@@ -126,7 +132,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<h4 class="text-center"> Data Perbaikan Tahun <?= date('Y') ?></h4>
-				<div style="width: 500px; margin: auto;margin-top: 15px;margin-bottom: 15px;" id="perbaikanChart">
+				<div style="width: 750px; margin: auto;margin-top: 15px;margin-bottom: 15px;" id="perbaikanChart">
 				</div>
 			</div>
 		</div>
@@ -139,19 +145,16 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-
 				<h4 class="text-center"> Data Consumable Tahun <?= date('Y') ?></h4>
 				<div class="row">
-					<div class="col-md-2 col-md-offset-5">
-						<select name="consum_chart" id="c_order_chart" class="form-control">
+					<div class="col-md-4 col-md-offset-4">
+						<select name="consum_chart" id="c_order_chart" class="selectpicker" data-live-search="true" title="Pilih Consumable">
 						<option value="All">All</option>
 							<?php
-							$a = $conn->query("SELECT id_consum, nama_consumable as nama 
-										FROM order_consumable as a
-										LEFT JOIN consumable as b ON a.id_consum = b.id
-										GROUP BY id_consum");
+							$a = $conn->query("SELECT id,kode_item, nama_consumable as nama 
+										FROM consumable");
 							while ($s = mysqli_fetch_assoc($a)) {
-								echo "<option value='${s['id_consum']}'>${s['nama']}</option>";
+								echo "<option value='${s['id']}'>${s['kode_item']} - ${s['nama']}</option>";
 							}
 							?>
 						</select>

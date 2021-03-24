@@ -98,6 +98,7 @@ if ( isset($_SESSION['user_login']) && $_SESSION['user_login'] != '' ) {
 			 
 				//Laporan ASET
 				case "laporan-aset" : 					$view = "laporan/aset-report.php"; 				break; 
+				case "laporan-perbaikan" : 				$view = "laporan/aset-report.php"; 				break; 
 				case "laporan-aset-update" : 			$view = "laporan/aset-report-update.php"; 		break;
 				case "laporan-aset-per-kategori" : 		$view = "laporan/aset-report-kategori.php"; 	break;
 				case "laporan-audit" : 					$view = "laporan/aset-report-audit.php"; 		break; 
@@ -109,7 +110,7 @@ if ( isset($_SESSION['user_login']) && $_SESSION['user_login'] != '' ) {
 				//Laporan Consumable
 				case "conlap-bulanan" :				$view = "consumable/report-bulanan.php"; 		break;
 
-				//Laporan Consumable
+				//Laporan Komponen
 				case "komplap-bulanan" :				$view = "componen/report-bulanan.php"; 		break;
 			 
 				//Aset
@@ -122,17 +123,18 @@ if ( isset($_SESSION['user_login']) && $_SESSION['user_login'] != '' ) {
 				case "Scanner" : 					$view = "view.php"; break;
 				case "Proyektor" : 					$view = "view.php"; break; 
 				case "Sewa" : 						$view = "view.php"; break;
-				case "registrasi-aset" : 			$view = "aset/asset-registrasi.php"; 	break;  
+				case "registrasi-aset" : 			$view = "aset/asset-registrasi2.php"; 	break;  
 				case "Pengalihan-Aset-Sewa" : 		$view = "aset/pengalihan-aset.php"; 	break;
 				case "Proses-Pengalihan-Aset" : 	$view = "aset/pengalihan-proses.php"; 	break; 	
 				case "Scrab" : 						$view = "aset-scrab/view.php"; 			break; 	
 				case "aset-detail" : 				$view = "aset/aset-detail.php"; 		break;
-				case "processor" : 					$view = "aset/view.php"; 		break;
-				case "Camera" : 					$view = "aset/view.php"; 		break;
+				case "processor" : 					$view = "aset/view.php"; 				break;
+				case "Camera" : 					$view = "aset/view.php"; 				break;
 				
 				//Consumable
-				case "con-pembagian" : 				$view = "consumable/pembagian.php"; break;
-				case "con-order" : 				$view = "consumable/order.php"; break;
+				case "con-pembagian" : 				$view = "consumable/pembagian.php"; 	break;
+				case "con-order" : 					$view = "consumable/order.php"; 		break;
+				case "consumable-detail" :			$view = "consumable/detail.php"; 		break;
 				
 				case "dashboard" : $view = "dashboard.php"; break; 
 				case "rincian" : $view = "asetdetail.php"; break; 
@@ -140,6 +142,7 @@ if ( isset($_SESSION['user_login']) && $_SESSION['user_login'] != '' ) {
 				case "chekin" : $view = "chekin.php"; break;  
 				case "kategori" : $view = "kategori.php"; break;
 				case "editkategori" : $view = "kategoriedit.php"; break;
+				case "tes" : $view = "test.php"; break;
 				//Print
 				case "print-aset" : $view = "laporan/print.php"; break;
 				case "print-kategori-aset" : $view = "laporan/print-aset-report-kategori.php"; break;
@@ -174,5 +177,3 @@ if ( isset($_SESSION['user_login']) && $_SESSION['user_login'] != '' ) {
     header('location: ../login.php?error='.base64_encode('Silahkan LogIn terlebih dahulu!!!'));
     exit();
 }
- 
- ?> 

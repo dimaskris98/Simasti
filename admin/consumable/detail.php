@@ -1,5 +1,5 @@
 <?php
-$id = $_POST['consumable-detail'];
+$id = $_GET['id'];
 $data = mysqli_fetch_array(mysqli_query($conn, "SELECT  * FROM consumable 
 				LEFT JOIN kategori ON consumable.id_kategori=kategori.id_kategori
 				LEFT JOIN manufaktur ON consumable.id_manufaktur=manufaktur.id_manufaktur WHERE id='$id'"));
@@ -10,17 +10,72 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT  * FROM consumable
 ?>
 <div class="container">
 	<div class="row">
-		<div class="col-md-8">
+		<div class="col-md-12">
 			<div class="panel widget-shadow">
 				<div class="nav-tabs-custom">
 					<ul class="nav nav-tabs">
-						<li class="active"><a href="#tab1" data-toggle="tab">Detail Pembagian</a></li>
+						<li class="active"><a href="#tab0" data-toggle="tab">Detail Item</a></li>
+						<li><a href="#tab1" data-toggle="tab">Detail Pembagian</a></li>
 						<li><a href="#tab2" data-toggle="tab">Detail Order</a></li>
-						<li class="pull-right"><a href="<?= $_POST['back-link']; ?>"><button type="button" class="btn btn-primary">Kembali</button></a></li>
+						<li class="pull-right"><a href="consumables"><button type="button" class="btn btn-primary">Kembali</button></a></li>
 					</ul>
 				</div>
-				<div class="tab-content">
-					<div id="tab1" class="tab-pane fade in active">
+				<div class="tab-content" style="min-height: 300px;">
+					<div id="tab0" class="tab-pane fade in active">
+						<div class="panel panel-default" style="border: none;">
+							<div class="panel-heading">
+								<?= $data['nama_consumable'] ?>
+							</div>
+							<div class="panel-body">
+								<style>
+									.mt {
+										margin-top: 0px;
+									}
+								</style>
+								<div class="row mt">
+									<label class="col-md-2 control-label">Kode Item</label>
+									<div class="pull-left">:</div>
+									<div class="col-md-9"><?= $data['kode_item'] ?: "-" ?></div>
+								</div>
+								<div class="row mt">
+									<label class="col-md-2 control-label">Warna</label>
+									<div class="pull-left">:</div>
+									<div class="col-md-9"><?= $data['warna'] ?: "-" ?></div>
+								</div>
+								<div class="row mt">
+									<label class="col-md-2 control-label">No Model</label>
+									<div class="pull-left">:</div>
+									<div class="col-md-9"><?= $data['no_model'] ?: "-" ?></div>
+								</div>
+								<div class="row mt">
+									<label class="col-md-2 control-label">Kategori</label>
+									<div class="pull-left">:</div>
+									<div class="col-md-9"><?= $data['nama_kategori'] ?: "-" ?></div>
+								</div>
+								<div class="row mt">
+									<label class="col-md-2 control-label">Manufaktur</label>
+									<div class="pull-left">:</div>
+									<div class="col-md-9"><?= $data['nama_manufaktur'] ?: "-" ?></div>
+								</div>
+								<div class="row mt">
+									<label class="col-md-2 control-label">Stok</label>
+									<div class="pull-left">:</div>
+									<div class="col-md-9"><?= $data['sisa'] ?: "-" ?></div>
+								</div>
+								<div class="row mt">
+									<label class="col-md-2 control-label">Min Stok</label>
+									<div class="pull-left">:</div>
+									<div class="col-md-9"><?= $data['minqty'] ?: "-" ?></div>
+								</div>
+								<div class="row mt">
+									<label class="col-md-2 control-label">Keterangan</label>
+									<div class="pull-left">:</div>
+									<div class="col-md-9"><?= $data['keterangan'] ?: "-" ?></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="tab1" class="tab-pane fade in">
 						<div class="panel">
 							<div class="panel-body ">
 								<div class="box-header with-border">
@@ -41,14 +96,20 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT  * FROM consumable
 											$res = $conn->query("SELECT  *, data_karyawan.*, users.* FROM consumable_user 
 													LEFT JOIN data_karyawan ON consumable_user.dibagikanke=data_karyawan.nik
 													LEFT JOIN users ON consumable_user.id_user=users.id_user WHERE id_consumable='$id'");
-											while ($row = $res->fetch_array()) { ?>
+											if ($res->num_rows > 0) {
+												while ($row = $res->fetch_array()) { ?>
+													<tr>
+														<td><?= $row['tgldibagikan'] ?></td>
+														<td><?= $row['nama_karyawan'] ?></td>
+														<td><?= $row['qty'] ?></td>
+														<td><?= $row['nama'] ?></td>
+													</tr>
+												<?php }
+											} else { ?>
 												<tr>
-													<td><?= $row['tgldibagikan'] ?></td>
-													<td><?= $row['nama_karyawan'] ?></td>
-													<td><?= $row['qty'] ?></td>
-													<td><?= $row['nama'] ?></td>
+													<td colspan="4" class="text-center"><i>Data masih kosong</i></td>
 												</tr>
-											<?php }	?>
+											<?php } ?>
 										</tbody>
 									</table>
 								</div>
@@ -81,18 +142,24 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT  * FROM consumable
 											$res = $conn->query("SELECT * FROM order_consumable as a 
 													LEFT JOIN data_pemasok as b ON b.id_sup=a.id_sup
 													LEFT JOIN users ON a.admin=users.id_user WHERE id_consum='$id'");
-											while ($row = $res->fetch_array()) { ?>
+											if ($res->num_rows > 0) {
+												while ($row = $res->fetch_array()) { ?>
+													<tr>
+														<td><?= $no++ ?></td>
+														<td><?= $row['id_po'] ?></td>
+														<td><?= $row['tgl_order'] ?></td>
+														<td><?= $row['jumlah'] ?></td>
+														<td>Rp. <?= $row['harga'] == "" ? "-" : harga($row['harga']) ?></td>
+														<td><?= $row['nama_sup'] ?></td>
+														<td><?= $row['nama'] ?></td>
+														<td><?= $row['catatan'] ?></td>
+													</tr>
+												<?php }
+											} else { ?>
 												<tr>
-													<td><?= $no++ ?></td>
-													<td><?= $row['id_po'] ?></td>
-													<td><?= $row['tgl_order'] ?></td>
-													<td><?= $row['jumlah'] ?></td>
-													<td>Rp.<?= $row['harga'] == "" ? "-" : $row['harga'] ?></td>
-													<td><?= $row['nama_sup'] ?></td>
-													<td><?= $row['nama'] ?></td>
-													<td><?= $row['catatan'] ?></td>
+													<td colspan="8" class="text-center"><i>Data masih kosong</i></td>
 												</tr>
-											<?php }	?>
+											<?php } ?>
 										</tbody>
 									</table>
 								</div>
@@ -103,24 +170,6 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT  * FROM consumable
 			</div>
 
 
-		</div>
-		<div class="col-md-4">
-			<div class="panel panel-primary">
-				<div class="panel-heading text-center">
-					<h4>Tentang Consumable</h4>
-				</div>
-				<div class="panel-body">
-
-					<div>
-						<p class="ex1">Consumables are anything purchased that will be used up over time. For example, printer ink or copier paper.</p>
-						<br>
-						<p class="ex2">Item No.: <?php echo $data['no_item']; ?></p>
-						<p class="ex2">Item Model: <?php echo $data['no_model']; ?></p>
-						<p class="ex2">Manufacturer: <?php echo $data['nama_manufaktur']; ?></p>
-						<br>
-					</div>
-				</div>
-			</div>
 		</div>
 	</div>
 </div>

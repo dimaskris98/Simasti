@@ -3,30 +3,37 @@
  </h2>
  <div class="main-page signup-page">
  	<div class="sign-up-row widget-shadow">
-
  		<form class="form-horizontal" method="POST" action="add">
  			<div class="form-group">
- 				<label class="col-sm-5 control-label">
- 					<h4>Nama :</h4>
- 				</label>
+ 				<label class="col-sm-5 control-label">Nama :</label>
  				<div class="col-sm-3">
  					<input class="form-control" type="text" name="nama" id="nama" value="" required>
  				</div>
  				<div class="clearfix"> </div>
  			</div>
  			<div class="form-group">
- 				<label class="col-sm-5 control-label">
- 					<h4>Kategori :</h4>
- 				</label>
+ 				<label class="col-sm-5 control-label">Kode Item :</label>
+ 				<div class="col-sm-3">
+ 					<input class="form-control" value="" type="text" name="item" id="item" required>
+ 				</div>
+ 				<div class="clearfix"> </div>
+ 			</div>
+ 			<div class="form-group">
+ 				<label class="col-sm-5 control-label">Warna :</label>
+ 				<div class="col-sm-3">
+ 					<input class="form-control" value="" type="text" name="warna" id="warna" required>
+ 				</div>
+ 				<div class="clearfix"> </div>
+ 			</div>
+ 			<div class="form-group">
+ 				<label class="col-sm-5 control-label">Kategori :</label>
  				<div class="col-sm-3">
  					<select name="kategori" id="kategori" class="form-control" required>
  						<?php
 							$no = 1;
 							$res = $conn->query("SELECT * FROM kategori where tipe='consumable'");
 							while ($row = $res->fetch_assoc()) {
-								echo '
-												<option value="' . $row['id_kategori'] . '">' . $row['nama_kategori'] . ' </option>
-												';
+								echo '<option value="' . $row['id_kategori'] . '">' . $row['nama_kategori'] . ' </option>';
 								$no++;
 							}
 							?>
@@ -39,18 +46,14 @@
  			</div>
 
  			<div class="form-group">
- 				<label class="col-sm-5 control-label">
- 					<h4>Manufaktur :</h4>
- 				</label>
+ 				<label class="col-sm-5 control-label">Manufaktur :</label>
  				<div class="col-sm-3">
  					<select name="manufaktur" id="manufaktur" class="form-control" required>
  						<?php
 							$no = 1;
 							$res = $conn->query("SELECT * FROM manufaktur");
 							while ($row = $res->fetch_assoc()) {
-								echo '
-											<option value="' . $row['id_manufaktur'] . '">' . $row['nama_manufaktur'] . '</option>
-											';
+								echo '<option value="' . $row['id_manufaktur'] . '">' . $row['nama_manufaktur'] . '</option>';
 								$no++;
 							}
 							?>
@@ -63,9 +66,7 @@
  			</div>
 
  			<div class="form-group">
- 				<label class="col-sm-5 control-label">
- 					<h4>Nomor Model :</h4>
- 				</label>
+ 				<label class="col-sm-5 control-label">Nomor Model :</label>
  				<div class="col-sm-3">
  					<input class="form-control" value="" type="text" name="model" id="model" required>
  				</div>
@@ -73,23 +74,27 @@
  			</div>
 
  			<div class="form-group">
- 				<label class="col-sm-5 control-label">
- 					<h4>Nomor Item :</h4>
- 				</label>
- 				<div class="col-sm-3">
- 					<input class="form-control" value="" type="text" name="item" id="item" required>
- 				</div>
- 				<div class="clearfix"> </div>
- 			</div>
-
- 			<div class="form-group">
- 				<label class="col-sm-5 control-label">
- 					<h4>Min QTY :</h4>
- 				</label>
+ 				<label class="col-sm-5 control-label">Min QTY :</label>
  				<div class="col-sm-3">
  					<input class="form-control" value="" type="text" name="minqty" id="minqty"></input>
  				</div>
  				<div class="clearfix"> </div>
+ 			</div>
+ 			<div class="form-group">
+ 				<label class="col-sm-5 control-label">
+ 					Stok :
+ 				</label>
+ 				<div class="col-sm-3">
+ 					<input class="form-control" value="" type="text" name="sisa" id="sisa">
+ 				</div>
+ 				<div class="clearfix"> </div>
+ 			</div>
+ 			<div class="form-group">
+ 				<label for="keterangan" class="col-md-5 control-label">Keterangan :</label>
+ 				<div class="col-md-3">
+ 					<textarea name="keterangan" id="keterangan" style="max-width: 100%; resize: vertical;overflow-y: auto;" rows="5" class="form-control"></textarea>
+ 				</div>
+
  			</div>
 
  			<div class="form-group">
@@ -102,5 +107,3 @@
  		</form>
  	</div>
  </div>
-
- 
