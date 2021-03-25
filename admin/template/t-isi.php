@@ -1,10 +1,10 @@
 <style>
-.open ul li {
-	margin-bottom: 0px!important;
-	border: none!important;
-	font-size: 14px;
-	padding-bottom: 0px;
-}
+	.open ul li {
+		margin-bottom: 0px !important;
+		border: none !important;
+		font-size: 14px;
+		padding-bottom: 0px;
+	}
 </style>
 
 <div class="row">
@@ -122,7 +122,37 @@
 	<div class="col-md-8 stats-info stats-last widget-shadow">
 		<div class="row">
 			<div class="col-md-12">
-				<h4 class="text-center"> Data Aset </h4>
+				<div class="row">
+					<h3 class="text-center">DATA KESELURUHAN</h3>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<form class="form" id="pieFilter">
+							<input type="hidden" name="dataTotal" value="filter">
+							<div class="form-group">
+								<div class="row">
+									<div class="col-md-3 col-md-offset-4">
+										<select name="barang" class="form-control" title="Pilih Data">
+											<option value="asset">Data Asset</option>
+											<option value="consumable">Data Consumable</option>
+											<option value="komponen">Data Komponen</option>
+										</select>
+									</div>
+									<div class="col-md-3">
+										<select name="jenis" class="form-control" title="Pilih Jenis">
+											<option value="total">Total</option>
+											<option value="alokasi">Alokasi</option>
+											<option value="gudang">Gudang</option>
+										</select>
+									</div>
+									<div class="col-md-2">
+										<button name="dataTotal" value="filter" class="btn btn-success">Tampilkan</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
 				<div style="width: 700px;margin:auto;margin-top: 15px;margin-bottom: 15px;" id="piechart1">
 				</div>
 			</div>
@@ -149,7 +179,7 @@
 				<div class="row">
 					<div class="col-md-4 col-md-offset-4">
 						<select name="consum_chart" id="c_order_chart" class="selectpicker" data-live-search="true" title="Pilih Consumable">
-						<option value="All">All</option>
+							<option value="All">All</option>
 							<?php
 							$a = $conn->query("SELECT id,kode_item, nama_consumable as nama 
 										FROM consumable");
@@ -175,3 +205,48 @@
 		<button type="submit" name="submit" class="btn btn-danger btn-md" onClick="mod=dashboard"><span>detail</span></button>
 	</form>
 </div>
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		google.charts.load('current', {
+			'packages': ['corechart', 'bar']
+		});
+
+		google.charts.setOnLoadCallback(function() {
+			drawPie1Chart();
+		});
+		// DRAW PIE CHART
+		function drawPie1Chart(data = {'dataTotal': 1}) {
+
+			let json = $.ajax({
+				url: "template/chart.php",
+				type: "POST",
+				dataType: "json",
+				data: data,
+				async: false
+			}).responseText;
+
+
+			var data = google.visualization.arrayToDataTable($.parseJSON(json));
+
+			var options = {
+				animation: {
+					startup: true,
+					duration: 1000,
+					easing: 'out',
+				},
+				width: 700,
+				height: 300,
+				is3D: true,
+			};
+
+			var piechart = new google.visualization.PieChart(document.getElementById('piechart1'));
+			piechart.draw(data, options);
+		}
+
+		$("#pieFilter").submit(function(e) {
+			e.preventDefault();
+			drawPie1Chart($(this).serialize());
+			
+		});
+	})
+</script>

@@ -65,7 +65,6 @@
   }).datepicker("setDate",new Date());
 </script>
 
-
 <script src="js/bootstrap-select.min.js"></script>
 <script src="js/bootstrap-select.js"></script>
 <link rel="stylesheet" href="css/bootstrap-select.min.css" type="text/css">
@@ -74,14 +73,12 @@
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/js.js"></script>
 
-
-
 <script src="asset/jquery-1.7.2.min.js"></script>
 <script src="asset/bootstrap.min.js"></script>
 
 <script src="asset/datatables/dataTables.bootstrap.min.js"></script>
 <link rel="stylesheet" href="asset/datatables/dataTables.bootstrap.css">
-<script src="asset/datatables/jquery-3.3.1.js"></script>
+
 <script src="asset/datatables/jquery.dataTables.min.js"></script>
 <script src="asset/datatables/buttons.print.min.js"></script>
 <script src="asset/datatables/buttons.html5.min.js"></script>
@@ -221,7 +218,6 @@
   });
 
   $("select.select3").select2({
-    placeholder: "Silahkan Pilih....",
     allowClear: true,
     tags: true
   });

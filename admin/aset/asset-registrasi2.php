@@ -47,10 +47,45 @@ if (isset($_POST['saveregitrasiaset'])) {
 	'$sewa','$po','$tglpo','$harga','$created_at','','','','','','$id_monitor',
 	'$checkout_date','','$catatan','$id_user','$status')";
 	$query	= mysqli_query($conn, $sql);
-	echo '<script>window.location="All"</script>';
+	echo '<scrip>window.location="All"</scrip>';
 }
 if ($mod = 'registrasiaset') {
 ?>
+	<style>
+		.mt-10 {
+			margin-top: 10px;
+		}
+
+		.mt-0 {
+			margin-top: 0px;
+		}
+
+		.select2-container {
+			font-size: 14px;
+		}
+
+		#tampilnote {
+			font-size: 12px;
+		}
+
+		.kiri {
+			text-align: left !important;
+		}
+
+		.nomor {
+			width: 50px;
+			float: left;
+		}
+
+		.input-group .biru {
+			background-color: #337ab7 !important;
+			color: white;
+		}
+
+		.input-group .biru:hover {
+			background-color: #286090 !important;
+		}
+	</style>
 	<section class="content">
 		<!-- Content -->
 		<div id="webui">
@@ -62,19 +97,20 @@ if ($mod = 'registrasiaset') {
 						</div><!-- /.box-header -->
 						<div class="box-body">
 							<form id="create-form" class="form-horizontal" method="post" action="" role="form" enctype="multipart/form-data">
+								<!-- DATA RESGISTRASI -->
 								<fieldset>
 									<legend>Data Registrasi</legend>
 									<div class="row">
-										<div class="col-md-6">
+										<div class="col-md-4">
 											<div class="form-group ">
-												<label for="name" class="col-md-3 control-label">No PO</label>
-												<div class="col-md-8 col-sm-12 required">
+												<label for="name" class="col-md-4 control-label">No PO</label>
+												<div class="col-md-7 required">
 													<input class="form-control" type="text" name="po" id="po" />
 												</div>
 											</div>
 											<div class="form-group ">
-												<label for="name" class="col-md-3 control-label">Tanggal PO</label>
-												<div class="col-md-8 col-sm-12 required">
+												<label for="name" class="col-md-4 control-label">Tanggal PO</label>
+												<div class="col-md-7 col-sm-12 required">
 													<div class="input-group">
 														<input type="text" class="form-control tglpicker" placeholder="date" name="tglpo" id="tglpo" value="" required>
 														<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
@@ -82,35 +118,33 @@ if ($mod = 'registrasiaset') {
 												</div>
 											</div>
 											<div class="form-group ">
-												<label for="name" class="col-md-3 control-label">Harga</label>
-												<div class="col-md-8 col-sm-12 required">
+												<label for="name" class="col-md-4 control-label">Harga</label>
+												<div class="col-md-7 col-sm-12 required">
 													<div class="input-group">
 														<input class="form-control" type="number" name="harga" id="harga" />
 														<span class="input-group-addon">
-															<i class="fa fa ">IDR</i>
+															<i>IDR</i>
 														</span>
 													</div>
 												</div>
 											</div>
 										</div>
-										<div class="col-md-6">
+										<div class="col-md-4">
 											<div class="form-group">
 												<label class="col-md-3 control-label">Pemasok</label>
 												<div class="col-md-7 required">
-													<select class="form-control" title="Pilih Pemasok" name="pemasok" id="pemasok">
-														<option value="">Silahkan Pilih...</option>
-														<?php
-														$res = $conn->query("SELECT * FROM data_pemasok");
-														while ($row = $res->fetch_assoc()) {
-															echo '
-													<option value="' . $row['id_sup'] . '"> ' . $row['nama_sup'] . ' </option>
-													';
-														}
-														?>
-													</select>
-												</div>
-												<div class="col-md-1 ">
-													<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#popsupplier" data-whatever="@mdo">Baru</button>
+													<div class="input-group">
+														<select class="form-control" title="Pilih Pemasok" name="pemasok" id="pemasok">
+															<option value="">Silahkan Pilih...</option>
+															<?php
+															$res = $conn->query("SELECT * FROM data_pemasok");
+															while ($row = $res->fetch_assoc()) {
+																echo '<option value="' . $row['id_sup'] . '"> ' . $row['nama_sup'] . ' </option>';
+															}
+															?>
+														</select>
+														<span class="input-group-addon biru" data-toggle="modal" data-target="#popsupplier"><i class="glyphicon glyphicon-plus"></i></span>
+													</div>
 												</div>
 											</div>
 											<div class="form-group ">
@@ -127,53 +161,84 @@ if ($mod = 'registrasiaset') {
 									</div>
 
 								</fieldset>
+								<!-- DATA ASSET -->
 								<fieldset>
-									<legend>Data Asset</legend>
+									<legend id="contain">Data Asset</legend>
 									<div class="form-group">
-										<div class="col-md-2 col-sm-12 required">
-											<input class="form-control" type="text" name="no_aset" id="no_aset" placeholder="No Asset" />
+										<label class="col-md-1 nomor control-label kiri">1.</label>
+										<div class="col-md-10">
+											<div class="col-md-2">
+												<label for="">No. Aset</label>
+												<input class="form-control" type="text" name="no_aset" id="no_aset" placeholder="No Asset" />
+											</div>
+											<div class="col-md-2">
+												<label for="">Kategori</label>
+												<select onchange="change()" class="form-control" title="Pilih Kategori" name="kategori" id="kategori" required>
+													<option value="" disabled selected>Pilih Kategori</option>
+													<?php
+													$res = $conn->query("SELECT * FROM data_kategori");
+													while ($row = $res->fetch_assoc()) {
+														echo '<option value="' . $row['kd_kategori'] . '"> ' . $row['nama_kategori'] . ' </option>';
+													}
+													?>
+												</select>
+											</div>
+											<div class="col-md-3">
+												<label for="">Model</label>
+												<div class="input-group">
+													<select class="form-control select3" title="Pilih Model" name="model" id="model">
+														<option value="" disabled selected>Pilih Model</option>
+														<?php
+														$res = $conn->query("SELECT model FROM data_aset GROUP BY model ORDER BY model ASC");
+														while ($row = $res->fetch_assoc()) {
+															echo '<option value="' . $row['model'] . '"> ' . $row['model'] . ' </option>';
+														}
+														?>
+													</select>
+													<span class="input-group-addon biru" data-toggle="modal" data-target="#popmodel"><i class="fa fa-plus"></i></span>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<label for="">Serial Number</label>
+												<input class="form-control" type="text" name="sn" id="sn" placeholder="Asset Tag / SN" />
+											</div>
+											<div class="col-md-2">
+												<label for="">Status</label>
+												<select onchange="TampilNotes(this.value)" onclick="changeValue(this.value)" class="form-control" title="Pilih Status" name="status" id="status" required>
+													<option value="" disabled selected>Status</option>
+													<?php
+													$res = $conn->query("SELECT * FROM status_labels  WHERE name NOT LIKE '%scrab%'");
+													$jsArray = "var dtstatus = new Array();\n";
+													while ($row = $res->fetch_assoc()) {
+														echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+														$jsArray .= "dtstatus['" . $row['id'] . "'] = {deployable:'" . addslashes($row['deployable']) . "'};\n";
+													}
+													?>
+												</select>
+												<a id="tampilnote"></a>
+												<input type="hidden" name="jrsn" id="jrsn" />
+											</div>
+											<div class="col-md-1">
+												<label for="">Sewa</label>
+												<div class="checkbox">
+													<label><input type="checkbox" name="sewa" id="sewa" value="1" /></label>
+												</div>
+											</div>
 										</div>
-										<div class="col-md-3 required">
-											<select onchange="change()" class="form-control" title="Pilih Kategori" name="kategori" id="kategori" required>
-												<option value="" disabled selected>Pilih Kategori</option>
-												<?php
-												$res = $conn->query("SELECT * FROM data_kategori");
-												while ($row = $res->fetch_assoc()) {
-													echo '
-													<option value="' . $row['kd_kategori'] . '"> ' . $row['nama_kategori'] . ' </option>
-													';
-												}
-												?>
-											</select>
+										<div class="col-md-1">
+											<button type="button" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></button>
 										</div>
-										<div class="col-md-3 required">
-										<select class="form-control select3" title="Pilih Model" name="model" id="model">
-											<option value="">Silahkan Pilih...</option>
-											<?php
-											$res = $conn->query("SELECT model FROM data_aset GROUP BY model ORDER BY model ASC");
-											while ($row = $res->fetch_assoc()) {
-												echo '
-													<option value="' . $row['model'] . '"> ' . $row['model'] . ' </option>
-													';
-											}
-											?>
-										</select>
 									</div>
-									</div>
-
 								</fieldset>
-
+								<hr>
 								<div class="form-group ">
-									<label for="model_number" class="col-md-3 control-label">Model</label>
-									
-									<div class="col-md-1 ">
-										<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#popmodel" data-whatever="@mdo">Baru</button>
+									<label for="name" class="col-md-3 control-label">Catatan</label>
+									<div class="col-md-7 col-sm-12 required">
+										<textarea class="form-control" type="text" name="catatan" id="catatan"></textarea>
+
 									</div>
 								</div>
-								<div class="form-group ">
-									<label for="model_number" class="col-md-3 control-label">Asset Tag (S/N).</label>
-									
-								</div>
+
 								<div id="divos" style="display:none;">
 									<div class="form-group ">
 										<label for="model_number" class="col-md-3 control-label">Ip Address</label>
@@ -204,33 +269,6 @@ if ($mod = 'registrasiaset') {
 										<div class="col-md-7">
 											<input class="form-control" type="text" name="vga" id="vga" />
 										</div>
-									</div>
-								</div>
-
-								<div class="form-group ">
-									<label for="model_number" class="col-md-3 control-label">Sewa</label>
-									<div class="col-md-7">
-										<input type="checkbox" name="sewa" id="sewa" value="1" />
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="category_id" class="col-md-3 control-label">Status</label>
-									<div class="col-md-7 required">
-										<select onchange="TampilNotes(this.value)" onclick="changeValue(this.value)" class="form-control" title="Pilih Status" name="status" id="status" required>
-											<option value="">Silahkan Pilih...</option>
-											<?php
-											$res = $conn->query("SELECT * FROM status_labels  WHERE name NOT LIKE '%scrab%'");
-											$jsArray = "var dtstatus = new Array();\n";
-											while ($row = $res->fetch_assoc()) {
-												echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
-												$jsArray .= "dtstatus['" . $row['id'] . "'] = {deployable:'" . addslashes($row['deployable']) . "'};\n";
-											}
-											?>
-										</select>
-										<input type="hidden" name="jrsn" id="jrsn" />
-									</div>
-									<div class="col-md-7 col-md-offset-3">
-										<a id="tampilnote"></a>
 									</div>
 								</div>
 								<div id="divstatus" style="display:none;">
@@ -282,13 +320,7 @@ if ($mod = 'registrasiaset') {
 										</div>
 									</div>
 								</div>
-								<div class="form-group ">
-									<label for="name" class="col-md-3 control-label">Catatan</label>
-									<div class="col-md-7 col-sm-12 required">
-										<textarea class="form-control" type="text" name="catatan" id="catatan"></textarea>
 
-									</div>
-								</div>
 								<div class="box-footer text-right">
 									<button type="submit" name="saveregitrasiaset" id="saveregitrasiaset" class="btn btn-success"><i class="fa fa-check icon-white"></i> Save</button>
 								</div>

@@ -40,6 +40,7 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
     <!-- js-->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="asset/datatables/jquery-3.3.1.js"></script>
     <script src="js/modernizr.custom.js"></script>
     <!--webfonts-->
     <link href='css/font/Roboto-Condensed.css' rel='stylesheet' type='text/css'>
@@ -68,8 +69,6 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
 
     <script src="js/bootstrap-datepicker.min.js"></script>
     <script src="js/bootstrap-datepicker.js"></script>
-
-
 
     <link rel="stylesheet" href="asset/css/bootstrap-duallistbox.min.css" />
 

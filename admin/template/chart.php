@@ -105,9 +105,9 @@ if (isset($_POST['ConsOrder'])) {
             $sql = $conn->query($stmt);
             if ($sql->num_rows > 0) {
                 $r = $sql->fetch_assoc();
-                if($r['jml'] == NULL){
+                if ($r['jml'] == NULL) {
                     array_push($data, [$day, 0]);
-                }else{
+                } else {
                     array_push($data, [$day, $r['jml']]);
                 }
             } else {
@@ -137,9 +137,9 @@ if (isset($_POST['ConsBagi'])) {
             $sql = $conn->query($stmt);
             if ($sql->num_rows > 0) {
                 $r = $sql->fetch_assoc();
-                if($r['jml'] == NULL){
+                if ($r['jml'] == NULL) {
                     array_push($data, [$day, 0]);
-                }else{
+                } else {
                     array_push($data, [$day, $r['jml']]);
                 }
             } else {
@@ -169,9 +169,9 @@ if (isset($_POST['KompOrder'])) {
             $sql = $conn->query($stmt);
             if ($sql->num_rows > 0) {
                 $r = $sql->fetch_assoc();
-                if($r['jml'] == NULL){
+                if ($r['jml'] == NULL) {
                     array_push($data, [$day, 0]);
-                }else{
+                } else {
                     array_push($data, [$day, $r['jml']]);
                 }
             } else {
@@ -201,9 +201,9 @@ if (isset($_POST['KompBagi'])) {
             $sql = $conn->query($stmt);
             if ($sql->num_rows > 0) {
                 $r = $sql->fetch_assoc();
-                if($r['jml'] == NULL){
+                if ($r['jml'] == NULL) {
                     array_push($data, [$day, 0]);
-                }else{
+                } else {
                     array_push($data, [$day, $r['jml']]);
                 }
             } else {
@@ -213,4 +213,74 @@ if (isset($_POST['KompBagi'])) {
     }
 
     echo json_encode($data);
+}
+
+if (isset($_POST['dataTotal'])) {
+
+
+    function pieAsset($conn, $jenis = "total")
+    {
+        $data = [];
+        $head = ['Kategori', 'Jumlah'];
+        array_push($data, $head);
+        $result = $conn->query("SELECT * FROM  data_kategori");
+
+        while ($row = $result->fetch_assoc()) {
+            $kategori = $row['kd_kategori'];
+            $sql = "SELECT * FROM data_aset WHERE kd_kategori = '$kategori'";
+            if ($jenis == "alokasi") {
+                $sql .= "AND lokasi = 'DI USER'";
+            }else if($jenis == "gudang"){
+                $sql .= "AND NOT lokasi = 'DI USER' ";
+            }
+            $total = mysqli_num_rows(mysqli_query($conn, $sql));
+            $r = [
+                $row['nama_kategori'] . " ($total)",
+                $total
+            ];
+            array_push($data, $r);
+        }
+        echo json_encode($data);
+    }
+
+    function pieConsumable($conn, $jenis = "total")
+    {
+        $data = [];
+        $head = ['Kategori', 'Jumlah'];
+        array_push($data, $head);
+        $result = $conn->query("SELECT * FROM  kategori WHERE tipe = 'consumable'");
+
+        while ($row = $result->fetch_assoc()) {
+            $kategori = $row['id_kategori'];
+            $sql = "SELECT SUM(stok) FROM consumable WHERE id_kategori = '$kategori'";
+            if ($jenis == "alokasi") {
+                $sql .= "AND lokasi = DI USER";
+            }
+            $total = mysqli_num_rows(mysqli_query($conn, $sql));
+            $r = [
+                $row['nama_kategori'] . " ($total)",
+                $total
+            ];
+            array_push($data, $r);
+        }
+        echo json_encode($data);
+    }
+
+    if ($_POST['dataTotal'] == 1) {
+        pieAsset($conn);
+    } else {
+        $d = $_POST['barang'];
+        $j = $_POST['jenis'];
+        if ($d = "asset") {
+            pieAsset($conn, $j);
+        } else if ($d == "consumable") {
+            if ($j = "total") {
+            } else if ($j == "alokasi") {
+            }
+        } else if ($d == "komponen") {
+            if ($j = "total") {
+            } else if ($j == "alokasi") {
+            }
+        }
+    }
 }

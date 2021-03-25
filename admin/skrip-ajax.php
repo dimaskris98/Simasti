@@ -1107,7 +1107,6 @@
 			'packages': ['corechart', 'bar']
 		});
 		google.charts.setOnLoadCallback(function() {
-			drawChart();
 			drawBarChart();
 			drawKomponen();
 			drawKonsum2();
