@@ -51,6 +51,10 @@ if (isset($_POST['saveregitrasiaset'])) {
 }
 if ($mod = 'registrasiaset') {
 ?>
+	<style>
+	.select2-container{
+		font-size: 14px!important;
+	}</style>
 	<section class="content">
 		<!-- Content -->
 		<div id="webui">
@@ -66,7 +70,7 @@ if ($mod = 'registrasiaset') {
 									<label class="col-md-3 control-label">Kategori</label>
 									<div class="col-md-7 required">
 										<select onchange="change()" class="form-control" title="Pilih Kategori" name="kategori" id="kategori" required>
-											<option value="">Silahkan Pilih...</option>
+											<option value="" selected disabled>Silahkan Pilih...</option>
 											<?php
 											$res = $conn->query("SELECT * FROM data_kategori");
 											while ($row = $res->fetch_assoc()) {
@@ -122,7 +126,7 @@ if ($mod = 'registrasiaset') {
 								<div class="form-group ">
 									<label for="model_number" class="col-md-3 control-label">Model</label>
 									<div class="col-md-7 required">
-										<select class="form-control" title="Pilih Model" name="model" id="model">
+										<select class="form-control select2" title="Pilih Model" name="model" id="model">
 											<option value="">Silahkan Pilih...</option>
 											<?php
 											$res = $conn->query("SELECT model FROM data_aset GROUP BY model ORDER BY model ASC");
@@ -179,7 +183,7 @@ if ($mod = 'registrasiaset') {
 								<div class="form-group">
 									<label class="col-md-3 control-label">Pemasok</label>
 									<div class="col-md-7 required">
-										<select class="form-control" title="Pilih Pemasok" name="pemasok" id="pemasok">
+										<select class="form-control select2" title="Pilih Pemasok" name="pemasok" id="pemasok">
 											<option value="">Silahkan Pilih...</option>
 											<?php
 											$res = $conn->query("SELECT * FROM data_pemasok");
@@ -206,7 +210,7 @@ if ($mod = 'registrasiaset') {
 									<label for="category_id" class="col-md-3 control-label">Status</label>
 									<div class="col-md-7 required">
 										<select onchange="TampilNotes(this.value)" onclick="changeValue(this.value)" class="form-control" title="Pilih Status" name="status" id="status" required>
-											<option value="">Silahkan Pilih...</option>
+											<option value="" selected disabled>Silahkan Pilih...</option>
 											<?php
 											$res = $conn->query("SELECT * FROM status_labels  WHERE name NOT LIKE '%scrab%'");
 											$jsArray = "var dtstatus = new Array();\n";
@@ -256,7 +260,7 @@ if ($mod = 'registrasiaset') {
 									<div class="form-group ">
 										<label for="model_number" class="col-md-3 control-label">No Aset Monitor</label>
 										<div class="col-md-7">
-											<select class="form-control" name="id_monitor" id="id_monitor" style="width: 100%">
+											<select class="form-control select2" data-live-search="true" name="id_monitor" id="id_monitor" style="width: 100%">
 												<option value="">Silahkan Pilih...</option>
 												<?php
 												$res = $conn->query("SELECT * FROM data_aset where kd_kategori='CM'");

@@ -79,16 +79,17 @@ if (isset($_POST['simpankomponen'])) {
 	$qty = '1';
 	$tgl = date("Y-m-d h:i:sa");
 
-	$sql1 = "INSERT INTO komponen_aset 
-	VALUES ('','$idkomponen', '$aset', '$serial', '$tgl', '$id_user')";
-	$query1	= mysqli_query($conn, $sql1);
-
-	//updet data komponen
-	$sql = "SELECT  qty,sisa FROM komponen WHERE id ='$idkomponen'";
+	$sql = "SELECT sisa FROM komponen WHERE id ='$idkomponen'";
 	$hasil = $conn->query($sql);
 	$data = $hasil->fetch_array();
 	$sisalama = $data['sisa'];
 	$stokbaru = $sisalama - $qty;
+
+	$sql1 = "INSERT INTO komponen_aset 
+	VALUES ('','$idkomponen', '$aset', '$serial', '$tgl', '$id_user',$stokbaru,$qty)";
+	$query1	= mysqli_query($conn, $sql1);
+
+	//updet data komponen
 
 	$sql 	= "UPDATE komponen SET sisa='$stokbaru' WHERE id='$idkomponen'";
 	$query	= mysqli_query($conn, $sql);
@@ -299,7 +300,7 @@ if (isset($_GET['komp'])) {
 				<div class="form-group">
 					<label class="col-md-4" for="">Pilih Aset : </label>
 					<div class="col-md-8">
-						<select class="form-control selectpicker" data-live-search="true" title="Pilih Unit Kerja" name="aset" id="aset" required>
+						<select class="form-control selectpicker" data-live-search="true" title="Pilih Asset" name="aset" id="aset" required>
 							<?php
 							$res = $conn->query("SELECT * FROM data_aset ORDER BY no ASC");
 							while ($row = $res->fetch_assoc()) {

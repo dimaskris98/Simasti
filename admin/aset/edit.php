@@ -73,9 +73,7 @@ if (isset($_POST['aset-detail'])) {
 							<?php
 							$res = $conn->query("SELECT model FROM data_aset where kd_kategori='$showaset[kd_kategori]' GROUP BY model ORDER BY model ASC");
 							while ($row = $res->fetch_assoc()) {
-								echo '
-													<option value="' . $row['model'] . '"> ' . $row['model'] . ' </option>
-													';
+								echo '<option value="' . $row['model'] . '"> ' . $row['model'] . ' </option>';
 							}
 
 							?>
@@ -182,9 +180,7 @@ if (isset($_POST['aset-detail'])) {
 							<?php
 							$res = $conn->query("SELECT * FROM data_karyawan");
 							while ($row = $res->fetch_assoc()) {
-								echo '
-												<option value="' . $row['nik'] . '">' . $row['nik'] . ' - ' . $row['nama_karyawan'] . '</option>
-											';
+								echo '<option value="' . $row['nik'] . '">' . $row['nik'] . ' - ' . $row['nama_karyawan'] . '</option>';
 							}
 							?>
 						</select>
@@ -209,11 +205,8 @@ if (isset($_POST['aset-detail'])) {
 						<?php
 						$res = $conn->query("SELECT * FROM data_aset where kd_kategori='cm'");
 						while ($row = $res->fetch_assoc()) {
-							echo '
-											<option value="' . $row['no'] . '">' . $row['no_aset'] . ' - ' . $row['model'] . '</option>
-										';
-						}
-						?>
+							echo '<option value="' . $row['no'] . '">' . $row['no_aset'] . ' - ' . $row['model'] . '</option>';
+						}?>
 					</select>
 				</div>
 				<div class="col-md-1 panel-grids">
@@ -221,8 +214,7 @@ if (isset($_POST['aset-detail'])) {
 				</div>
 			</div>
 		<?php
-		}
-		?>
+		}?>
 
 
 		<!-- Catatan -->

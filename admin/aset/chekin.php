@@ -119,7 +119,12 @@ function echoLog($conn, $message)
 	}
 }
 ?>
-<Div id="webui">
+<style>
+.select2-container{
+	font-size: 14px!important;
+}
+</style>
+<div id="webui">
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
 			<div class="box box-default">
@@ -132,14 +137,12 @@ function echoLog($conn, $message)
 						<div class="form-group ">
 							<label for="name" class="col-md-3 control-label">No Aset</label>
 							<div class="col-md-7 col-sm-12 required">
-								<select class="form-control selectpicker" data-live-search="true" title="Pilih Aset" name="no_aset" id="no_aset" required>
+								<select class="form-control select2" data-live-search="true" title="Pilih Aset" name="no_aset" id="no_aset" required>
 									<option value=""></option>
 									<?php
 									$res = $conn->query("SELECT * FROM data_aset where lokasi='DI USER'");
 									while ($row = $res->fetch_assoc()) {
-										echo '
-													<option value="' . $row['no'] . '/' . $row['no_aset'] . '"> ' . $row['no_aset'] . ' - ' . $row['model'] . ' </option>
-													';
+										echo '<option value="' . $row['no'] . '/' . $row['no_aset'] . '"> ' . $row['no_aset'] . ' - ' . $row['model'] . ' </option>';
 									}
 									?>
 								</select>
@@ -171,7 +174,7 @@ function echoLog($conn, $message)
 							<div class="form-group ">
 								<label for="model_number" class="col-md-3 control-label">No Aset</label>
 								<div class="col-md-7">
-									<select class="form-control selectpicker" data-live-search="true" title="Pilih Monitor" name="monitor" id="monitor">
+									<select style="width: 100%;" class="form-control select2" data-live-search="true" title="Pilih Monitor" name="monitor" id="monitor">
 										<option value=""></option>
 										<?php
 										$res = $conn->query("SELECT * FROM data_aset where kd_kategori='CM' and lokasi='DI USER'");
@@ -204,14 +207,12 @@ function echoLog($conn, $message)
 						<div class="form-group">
 							<label class="col-md-3 control-label">Karyawan</label>
 							<div class="col-md-7 required">
-								<select class="form-control selectpicker" data-live-search="true" title="Pilih Karyawan" name="karyawan" id="karyawan" required>
+								<select class="form-control select2" data-live-search="true" title="Pilih Karyawan" name="karyawan" id="karyawan" required>
 									<option value=""></option>
 									<?php
 									$res = $conn->query("SELECT * FROM data_karyawan");
 									while ($row = $res->fetch_assoc()) {
-										echo '
-													<option value="' . $row['nik'] . '/' . $row['nama_karyawan'] . '"> ' . $row['nik'] . '-' . $row['nama_karyawan'] . ' </option>
-													';
+										echo '<option value="' . $row['nik'] . '/' . $row['nama_karyawan'] . '"> ' . $row['nik'] . '-' . $row['nama_karyawan'] . ' </option>';
 									}
 
 									?>
@@ -221,7 +222,7 @@ function echoLog($conn, $message)
 						<div class="form-group">
 							<label class="col-md-3 control-label">Unit Kerja</label>
 							<div class="col-md-7 required">
-								<select name="uker" id="uker" title="Pilih Unit Kerja" class="form-control  selectpicker" data-live-search="true" required>
+								<select name="uker" id="uker" title="Pilih Unit Kerja" class="form-control select2" data-live-search="true" required>
 									<option value=""></option>
 									<?php
 									$res = $conn->query("SELECT * FROM data_uker");
@@ -259,7 +260,7 @@ function echoLog($conn, $message)
 							<div class="form-group ">
 								<label for="name" class="col-md-3 control-label">No Aset</label>
 								<div class="col-md-7 col-sm-12 required">
-									<select class="form-control selectpicker" data-live-search="true" title="Pilih Aset" name="aset_replace" id="no_aset_replace">
+									<select style="width: 100%;" class="form-control select2" data-live-search="true" title="Pilih Aset" name="aset_replace" id="no_aset_replace">
 										<option value=""></option>
 										<?php
 										$res = $conn->query("SELECT * FROM data_aset where lokasi='DI USER'");
@@ -280,12 +281,12 @@ function echoLog($conn, $message)
 								<div class="form-group ">
 									<label for="model_number" class="col-md-3 control-label">No Aset</label>
 									<div class="col-md-7">
-										<select class="form-control selectpicker" data-live-search="true" title="Pilih Monitor" name="monitor_replace" id="monitor_replace">
+										<select style="width: 100%;" class="form-control select2" data-live-search="true" title="Pilih Monitor" name="monitor_replace" id="monitor_replace">
 											<option value=""></option>
 											<?php
 											$res = $conn->query("SELECT * FROM data_aset where kd_kategori='CM' and lokasi='DI USER'");
 											while ($row = $res->fetch_assoc()) {
-												echo '<option value="' . $row['no'] . '/' . $row['no_aset'] . '"> ' . $row['no_aset'] . ' - ' . $row['model'] . ' </option>';
+												echo '<option value="' . $row['no'] . '/' . $row['no_aset'] . '">' . $row['no_aset'] . ' - ' . $row['model'] . ' </option>';
 											}
 
 											?>

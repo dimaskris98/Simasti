@@ -13,9 +13,6 @@
          <div class="pull-right">
 
          </div>
-
-
-
      </section>
      <section class="content">
          <!-- Content -->
@@ -164,10 +161,6 @@
 
                              <div class="tab-pane" id="asset_tab">
                                  <!-- checked out assets table -->
-
-
-
-
                                  <div class="box-body table-responsive">
 
                                      <form role="form" action="add" method="POST" enctype="multipart/form-data">
@@ -191,10 +184,10 @@
                                          <tbody>
                                              <?php
                                                 $res1 = $conn->query("SELECT  * FROM data_aset 
-						Left join data_karyawan ON data_aset.nik=data_karyawan.nik
-						Left join data_uker ON data_aset.kd_uker=data_uker.kd_uker 
-						Left join data_uker_bagian ON data_aset.kd_uker=data_uker_bagian.kd_bag  
-								where data_aset.nik='$no' ORDER BY no ASC");
+						                            Left join data_karyawan ON data_aset.nik=data_karyawan.nik
+						                            Left join data_uker ON data_aset.kd_uker=data_uker.kd_uker 
+						                            Left join data_uker_bagian ON data_aset.kd_uker=data_uker_bagian.kd_bag  
+						                            where data_aset.nik='$no' ORDER BY no ASC");
 
                                                 while ($row1 = $res1->fetch_assoc()) {
                                                     echo '
@@ -306,19 +299,16 @@
 											LEFT JOIN data_karyawan ON data_aset_logs.target=data_karyawan.nik  
 											LEFT JOIN users ON data_aset_logs.admin=users.id_user
 											where target='$no' ORDER BY tgl DESC");
-                                                    while ($row3 = $res3->fetch_assoc()) {
-                                                        echo '
-									<tr>
-										 <td>' . tanggal_indo($row3['tgl']) . '</td> 
-										 <td>' . $row3['nama'] . '</td>
-										 <td>' . $row3['no_aset'] . ' - ' . $row3['model'] . '</td>
-										 <td>' . $row3['aksi'] . '</td>
-										 <td>' . $row3['nama_karyawan'] . '</td> 
-										 <td>' . $row3['catatan'] . '</td> 
-										 						
-									</tr>';
-                                                    }
-                                                    ?>
+                                                    while ($row3 = $res3->fetch_assoc()) { ?>
+                                                     <tr>
+                                                         <td><?= @tanggal_indo($row3['tgl']) ?: "-" ?></td>
+                                                         <td><?= $row3['nama'] ?></td>
+                                                         <td><?= $row3['no_aset'] . "-" . $row3['model'] ?></td>
+                                                         <td><?= $row3['aksi'] ?></td>
+                                                         <td><?= $row3['nama_karyawan'] ?></td>
+                                                         <td><?= $row3['catatan'] ?></td>
+                                                     </tr>
+                                                 <?php }   ?>
                                              </tbody>
                                          </table>
 

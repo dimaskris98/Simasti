@@ -1107,9 +1107,7 @@
 			'packages': ['corechart', 'bar']
 		});
 		google.charts.setOnLoadCallback(function() {
-			drawBarChart();
 			drawKomponen();
-			drawKonsum2();
 		});
 
 		//DATA Aset
@@ -1145,56 +1143,7 @@
 
 		}
 		// DATA PERBAIKAN
-		function drawBarChart() {
-			<?php
-			$data = [];
-			$date = date('Y');
-			for ($i = 1; $i <= count($bulan); $i++) {
-				$data[$i] = mysqli_fetch_assoc(
-					mysqli_query(
-						$conn,
-						"SELECT distinct count(keluhan) as total FROM perbaikan          
-                        WHERE tgl_masuk LIKE '$date-%$i-__'"
-					)
-				);
-			}
-			//echo mysqli_error($conn);
-			//var_dump($data);
-			?>
-
-			var data = google.visualization.arrayToDataTable([
-				['Bulan', 'Keluhan'],
-				<?php
-				foreach ($data as $key => $value) { ?>['<?= $bulan[$key] ?>', <?= $value['total'] ?>],
-				<?php }
-				?>
-			]);
-
-			var options = {
-				width: "100%",
-				height: 300,
-				animation: {
-					startup: true,
-					duration: 1000,
-					easing: 'out',
-				},
-				hAxis: {
-					title: 'Bulan'
-				},
-				vAxis: {
-					title: 'Keluhan',
-				},
-				bar: {
-					groupWidth: "75%"
-				},
-				legend: {
-					position: "none"
-				}
-			};
-
-			var barChart = new google.visualization.ColumnChart(document.getElementById('perbaikanChart'));
-			barChart.draw(data, options);
-		}
+		
 		// DATA KOMPONEN
 		function drawKomponen() {
 			<?php
@@ -1232,59 +1181,6 @@
 			var chart = new google.visualization.PieChart(document.getElementById('komponenChart'));
 			chart.draw(data, options);
 		}
-
-
-		function drawKonsum2(id = "All") {
-
-			let json = $.ajax({
-				url: "template/chart.php",
-				type: "POST",
-				dataType: "json",
-				data: {
-					'id_consum': id
-				},
-				async: false
-			}).responseText;
-
-			var data = google.visualization.arrayToDataTable($.parseJSON(json));
-			if (id == "All") {
-				var series = {}
-			} else {
-				var series = {
-					1: {
-						lineDashStyle: [2, 2]
-					}
-				};
-			}
-
-			var options = {
-				title: null,
-				animation: {
-					duration: 1000,
-					easing: 'out',
-					startup: true,
-				},
-				legend: {
-					position: 'bottom'
-				},
-				series: series,
-				hAxis: {
-					title: 'Bulan'
-				},
-				vAxis: {
-					title: 'Rata-rata Stok',
-					minValue: 0
-				}
-			};
-
-			var chart = new google.visualization.LineChart(document.getElementById('consumableChart'));
-			chart.draw(data, options);
-		}
-
-		$('#c_order_chart').on("change", function() {
-			var id = $(this).val();
-			drawKonsum2(id);
-		});
 	})
 
 	function base64ToArrayBuffer(_base64Str) {

@@ -32,10 +32,10 @@ if (isset($_POST['simpakomponen'])) {
 	$nama = $_POST['nama'];
 	$kategori = $_POST['kategori'];
 	$sisa = $_POST['sisa'];
-
+	$stok = $_POST['stok'];
 	$minqty = $_POST['minqty'];
 	//Memasukkan data 
-	$sql 	= "UPDATE komponen SET nama_komponen='$nama', id_kategori='$kategori', sisa='$sisa' ,min_qty='$minqty' 
+	$sql = "UPDATE komponen SET nama_komponen='$nama', id_kategori='$kategori', sisa='$stok', sisa='$sisa' ,min_qty='$minqty' 
 		WHERE id='$id'";
 
 	//echo $sql;	
@@ -90,6 +90,15 @@ if (isset($_POST['simpakomponen'])) {
 					<h4>Stok :</h4>
 				</label>
 				<div class="col-sm-2">
+					<input class="form-control" value="<?php echo $data['stok']; ?>" type="text" name="stok" id="sisa">
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-5 control-label">
+					<h4>Sisa :</h4>
+				</label>
+				<div class="col-sm-2">
 					<input class="form-control" value="<?php echo $data['sisa']; ?>" type="text" name="sisa" id="sisa">
 				</div>
 				<div class="clearfix"> </div>
@@ -98,7 +107,7 @@ if (isset($_POST['simpakomponen'])) {
 				<label class="col-sm-5 control-label">
 					<h4>Min QTY :</h4>
 				</label>
-				<div class="col-sm-1">
+				<div class="col-sm-2">
 					<input class="form-control" value="<?php echo $data['min_qty']; ?>" type="text" name="minqty" id="minqty"></input>
 				</div>
 				<div class="clearfix"> </div>

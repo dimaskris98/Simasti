@@ -10,13 +10,14 @@ if (isset($_POST['submit'])) {
     $stat = true;
     $message = "";
 
-    $stok = mysqli_fetch_assoc(mysqli_query($conn, "SELECT sisa FROM komponen WHERE id = '$id_komp'"));
-    $stok = $stok['sisa'] + $jml;
+    $stok = mysqli_fetch_assoc(mysqli_query($conn, "SELECT stok,sisa FROM komponen WHERE id = '$id_komp'"));
+    $stok = $stok['stok'] + $jml;
+    $sisa = $stok['sisa'] + $jml;
     $stmt = $conn->prepare("INSERT INTO order_komponen  VALUES ('',?,DEFAULT,?,?,?,?,?,?,?)");
-    $stmt->bind_param("iiiiiiis", $id_po, $id_komp, $jml,$harga, $stok, $id_user, $id_sup,$catatan);
+    $stmt->bind_param("iiiiiiis", $id_po, $id_komp, $jml,$harga, $sisa, $id_user, $id_sup,$catatan);
     if ($stmt->execute()) {
-        $stmt = $conn->prepare("UPDATE komponen SET sisa = ? WHERE id = ? ");
-        $stmt->bind_param("ii", $stok, $id_komp);
+        $stmt = $conn->prepare("UPDATE komponen SET stok = ?, sisa = ? WHERE id = ? ");
+        $stmt->bind_param("ii", $stok, $sisa, $id_komp);
         if ($stmt->execute()) {
             echo "<script>
                     alert('Order berhasil ditambahkan');
@@ -35,7 +36,10 @@ if (isset($_POST['submit'])) {
         echo "<script> alert('$message') </script>";
     }
 }
-
+$id="NULL";
+if(isset($_GET['id'])){
+    $id = $_GET['id'];
+}
 ?>
 
 <section class="content-header">
@@ -70,7 +74,7 @@ if (isset($_POST['submit'])) {
                                         $sql = "SELECT id,nama_komponen as nama FROM komponen";
                                         $query = $conn->query($sql);
                                         while ($row = mysqli_fetch_assoc($query)) { ?>
-                                            <option value="<?= $row['id'] ?>"><?= $row['nama'] ?></option>
+                                            <option value="<?= $row['id'] ?>" <?= $id==$row['id']?"selected":"" ?>><?= $row['nama'] ?></option>
                                         <?php
                                         }
                                         ?>

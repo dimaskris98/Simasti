@@ -4,11 +4,12 @@ if (isset($_POST['simpankomponen'])) {
 	$id_user = $_SESSION['sess_id'];
 	$nama = $_POST['nama'];
 	$kategori = $_POST['kategori'];
-	$sisa = 0;
+	$stok = $_POST['stok'];
+	$sisa = $_POST['sisa'];
 	$minqty = $_POST['minqty'];
 	//Memasukkan data
 	$sql = "INSERT INTO komponen VALUES 
-('', '$nama', '$kategori', '$sisa', '$minqty')";
+('', '$nama', '$kategori', '$stok', '$sisa', '$minqty')";
 	$query	= mysqli_query($conn, $sql);
 	echo '<script>window.location="?mod=komponen"</script>';
 }
@@ -22,7 +23,7 @@ if (isset($_POST['simpankomponen'])) {
 		<form class="form-horizontal" method="POST" action="">
 			<div class="form-group">
 				<label class="col-sm-5 control-label">
-					<h4>Nama :</h4>
+					Nama :
 				</label>
 				<div class="col-sm-3">
 					<input class="form-control" type="text" name="nama" id="nama" required>
@@ -31,7 +32,7 @@ if (isset($_POST['simpankomponen'])) {
 			</div>
 			<div class="form-group">
 				<label class="col-sm-5 control-label">
-					<h4>Kategori :</h4>
+					Kategori :
 				</label>
 				<div class="col-sm-3">
 					<select name="kategori" id="kategori" class="form-control" required>
@@ -52,13 +53,37 @@ if (isset($_POST['simpankomponen'])) {
 			</div>
 			<div class="form-group">
 				<label class="col-sm-5 control-label">
-					<h4>Min QTY :</h4>
+					Stok :
 				</label>
 				<div class="col-sm-3">
-					<input class="form-control" type="text" name="minqty" id="minqty"></input>
+					<input class="form-control" value="" type="number" name="stok" id="stok">
 				</div>
 				<div class="clearfix"> </div>
 			</div>
+			<div class="form-group">
+				<label class="col-sm-5 control-label">
+					Sisa :
+				</label>
+				<div class="col-sm-3">
+					<input class="form-control" value="" type="number" name="sisa" id="sisa">
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-5 control-label">
+					Min QTY :
+				</label>
+				<div class="col-sm-3">
+					<input class="form-control" type="number" name="minqty" id="minqty"></input>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			<div class="form-group">
+ 				<label for="keterangan" class="col-md-5 control-label">Keterangan :</label>
+ 				<div class="col-md-3">
+ 					<textarea name="keterangan" id="keterangan" style="max-width: 100%; resize: vertical;overflow-y: auto;" rows="5" class="form-control"></textarea>
+ 				</div>
+ 			</div>
 			<div class="form-group">
 				<div class="col-sm-offset-8 col-sm-6">
 					<button type="submit" class="btn btn-primary" name="simpankomponen">Simpan</button>

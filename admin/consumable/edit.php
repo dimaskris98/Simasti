@@ -90,7 +90,7 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT  * FROM consumable
 			</div>
 			<div class="form-group">
 				<label class="col-sm-5 control-label">
-					Stok :
+					Sisa :
 				</label>
 				<div class="col-sm-3">
 					<input class="form-control" value="<?php echo $data['sisa']; ?>" type="text" name="sisa" id="sisa">

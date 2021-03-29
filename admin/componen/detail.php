@@ -32,6 +32,7 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM komponen
 												<th>No.</th>
 												<th>Tanggal</th>
 												<th>Aset</th>
+												<th>No. Serial</th>
 												<th>Admin</th>
 											</tr>
 										</thead>
@@ -46,6 +47,7 @@ $data = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM komponen
 													<td><?= $no++; ?></td>
 													<td><?= $row['tgldibagikan'] ?></td>
 													<td><?= $row['no_aset'] ?></td>
+													<td><?= $row['serial'] ?></td>
 													<td><?= $row['nama'] ?></td>
 												</tr>
 											<?php }	?>

@@ -45,7 +45,7 @@ if (isset($_POST['simpaconsumable-edit'])) {
 									<th>Kategori</th>
 									<th>Manufaktur</th>
 									<th>No Model</th>
-									<th>Stok</th>
+									<th>Sisa</th>
 									<th>Status</th>
 									<th>Aksi</th>
 								</tr>
@@ -78,7 +78,7 @@ if (isset($_POST['simpaconsumable-edit'])) {
 												<input type="hidden" name="back-link" value="<?= $mod ?>">
 												<?php
 												if ($row['sisa'] <= 1) {
-													echo '<a href="javascript:void(0);" title=" disabled"><span class="btn btn-sm" >Bagikan</span></a>';
+													echo '<a href="javascript:void(0);" title=" disabled"><span class="btn btn-sm btn-primary" >Bagikan</span></a>';
 												} else {
 													echo '<a href="chekout?cons=' . $string . '" title="Edit Data"><span class="btn btn-primary btn-sm" >Bagikan</span></a>';
 												}

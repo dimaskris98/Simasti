@@ -34,9 +34,10 @@ if (isset($_POST['hapus'])) {
 								<tr>
 									<th>Nama</th>
 									<th>Kategori</th>
+									<th>Stok</th>
 									<th>Sisa</th>
 									<th>Min.QTY</th>
-									<th>In/Out</th>
+									<th>Keterangan</th>
 									<th>Aksi</th>
 								</tr>
 							</thead>
@@ -52,17 +53,19 @@ if (isset($_POST['hapus'])) {
 											<input type="hidden" name="idd" value="<?= $row['id'] ?>">
 											<td><a href="komponen-detail?id=<?= $row['id'] ?>" title="Detail Aset"><?= $row['nama_komponen'] ?></a></td>
 											<td><?= $row['nama_kategori'] ?></td>
+											<td><?= $row['stok'] ?></td>
 											<td><?= $row['sisa'] ?></td>
 											<td><?= $row['min_qty'] ?></td>
+											<td><?= $row['keterangan'] ?></td>
 											<td>
 												<?php
 												if ($row['sisa'] <= 0) {
-													echo '<a href="javascript:void(0);" title=" disabled"><span class="label label-default" >ChekOut</span></a>';
+													echo '<a class="btn btn-primary btn-sm" disabled>Bagikan</a>';
 												} else {
-													echo '<a href="chekout?komp=' . $string . '" title="Edit Data"><span class="label label-success" >ChekOut</span></a>';
+													echo '<a href="chekout?komp=' . $string . '" title="Edit Data"><span class="btn btn-primary btn-sm" >Bagikan</span></a>';
 												} ?>
-											</td>
-											<td>
+												<a href="komponen-order?id=<?= $row['id'] ?>" data-toggle="tooltip" title="Order" class="btn btn-success btn-sm">Order</a>
+												|
 												<a href="komponen-edit?id=<?= $string ?>" title="Edit Data" class="btn btn-primary btn-sm"><span class="fa fa-pencil" aria-hidden="true"></span></a>
 												<button type="submit" name="hapus" onclick="return confirm('Anda yakin akan menghapus data <?= $row['nama_komponen'] ?>?')" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
 											</td>

@@ -82,7 +82,7 @@
  			</div>
  			<div class="form-group">
  				<label class="col-sm-5 control-label">
- 					Stok :
+ 					Sisa :
  				</label>
  				<div class="col-sm-3">
  					<input class="form-control" value="" type="text" name="sisa" id="sisa">
@@ -94,7 +94,6 @@
  				<div class="col-md-3">
  					<textarea name="keterangan" id="keterangan" style="max-width: 100%; resize: vertical;overflow-y: auto;" rows="5" class="form-control"></textarea>
  				</div>
-
  			</div>
 
  			<div class="form-group">

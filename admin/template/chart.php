@@ -18,8 +18,6 @@ if (isset($_POST['id_consum'])) {
             array_push($id, $s['id']);
         }
 
-        //var_dump($id);
-
         for ($i = 0; $i <= count($bulan); $i++) {
             if ($i == 0) {
 
@@ -33,21 +31,29 @@ if (isset($_POST['id_consum'])) {
                 $no = 1;
                 $data[$i][0] = $bulan[$i];
                 foreach ($id as $l) {
-                    $val = mysqli_fetch_assoc(
-                        mysqli_query(
-                            $conn,
-                            "SELECT AVG(rata) as rata FROM(
-                                SELECT AVG(stok_temp) as rata FROM order_consumable          
-                                    WHERE tgl_order LIKE '$date-%$i-%'
-                                    AND id_consum = $l
-                                UNION
-                                SELECT AVG(stok_temp) as rata FROM consumable_user          
-                                    WHERE tgldibagikan LIKE '$date-%$i-%'
-                                    AND id_consumable = $l
-                            )as a"
-                        )
+                    $res = mysqli_query(
+                        $conn,
+                        "SELECT * FROM(
+                            (SELECT stok_temp as stok, tgl_order as tgl FROM order_consumable          
+                                WHERE tgl_order LIKE '$date-%$i-%'
+                                AND id_consum = $l 
+                                ORDER BY tgl DESC LIMIT 1)
+                            UNION
+                            (SELECT stok_temp as stok, tgldibagikan as tgl FROM consumable_user          
+                                WHERE tgldibagikan LIKE '$date-%$i-%'
+                                AND id_consumable = $l
+                                ORDER BY tgl DESC LIMIT 1)
+                        )as a ORDER BY a.tgl DESC LIMIT 1"
                     );
-                    $data[$i][$no] = $val['rata'] == null ? 0 : $val['rata'];
+                    $val = [];
+                    if ($res->num_rows > 0 || date('n') != $i) {
+                        $val = $res->fetch_assoc();
+                    } else if ($res->num_rows <= 0 && date('n') == $i) {
+                        $sql = $conn->query("SELECT sisa as stok FROM consumable WHERE id = $l");
+                        $val = $sql->fetch_assoc();
+                    }
+
+                    $data[$i][$no] = $val['stok'] == null ? 0 : $val['stok'];
                     $no++;
                 }
             }
@@ -63,21 +69,28 @@ if (isset($_POST['id_consum'])) {
                 $head = ['Bulan', $nama['nama'], 'Min(' . $nama['min'] . ')'];
                 array_push($data, $head);
             } else {
-                $rata = mysqli_fetch_assoc(
-                    mysqli_query(
-                        $conn,
-                        "SELECT AVG(rata) as rata FROM (
-                            SELECT AVG(stok_temp) as rata FROM order_consumable          
-                                 WHERE tgl_order LIKE '$date-%$i-%'
-                                AND id_consum = $id
-                            UNION
-                            SELECT AVG (stok_temp)as rata FROM consumable_user
-                                WHERE tgldibagikan LIKE '$date-%$i-%'
-                                AND id_consumable = $id
-                        ) as a"
-                    )
+                $res = mysqli_query(
+                    $conn,
+                    "SELECT * FROM(
+                        (SELECT stok_temp as stok, tgl_order as tgl FROM order_consumable          
+                            WHERE tgl_order LIKE '$date-%$i-%'
+                            AND id_consum = $id 
+                            ORDER BY tgl DESC LIMIT 1)
+                        UNION
+                        (SELECT stok_temp as stok, tgldibagikan as tgl FROM consumable_user          
+                            WHERE tgldibagikan LIKE '$date-%$i-%'
+                            AND id_consumable = $id
+                            ORDER BY tgl DESC LIMIT 1)
+                    )as a ORDER BY a.tgl DESC LIMIT 1"
                 );
-                $r = [$bulan[$i], (int) $rata['rata'], (int) $nama['min']];
+                $val = [];
+                if ($res->num_rows > 0 || date('n') != $i) {
+                    $val = $res->fetch_assoc();
+                } else if ($res->num_rows <= 0 && date('n') == $i) {
+                    $sql = $conn->query("SELECT sisa as stok FROM consumable WHERE id = $id");
+                    $val = $sql->fetch_assoc();
+                }
+                $r = [$bulan[$i], (int) $val['stok'], (int) $nama['min']];
                 $data[$i] = $r;
             }
         }
@@ -217,7 +230,6 @@ if (isset($_POST['KompBagi'])) {
 
 if (isset($_POST['dataTotal'])) {
 
-
     function pieAsset($conn, $jenis = "total")
     {
         $data = [];
@@ -230,13 +242,13 @@ if (isset($_POST['dataTotal'])) {
             $sql = "SELECT * FROM data_aset WHERE kd_kategori = '$kategori'";
             if ($jenis == "alokasi") {
                 $sql .= "AND lokasi = 'DI USER'";
-            }else if($jenis == "gudang"){
+            } else if ($jenis == "gudang") {
                 $sql .= "AND NOT lokasi = 'DI USER' ";
             }
             $total = mysqli_num_rows(mysqli_query($conn, $sql));
             $r = [
                 $row['nama_kategori'] . " ($total)",
-                $total
+                (int)$total ?: 0
             ];
             array_push($data, $r);
         }
@@ -252,35 +264,104 @@ if (isset($_POST['dataTotal'])) {
 
         while ($row = $result->fetch_assoc()) {
             $kategori = $row['id_kategori'];
-            $sql = "SELECT SUM(stok) FROM consumable WHERE id_kategori = '$kategori'";
-            if ($jenis == "alokasi") {
-                $sql .= "AND lokasi = DI USER";
-            }
-            $total = mysqli_num_rows(mysqli_query($conn, $sql));
+            $sql = "SELECT sisa FROM consumable WHERE id_kategori = '$kategori'";
+            $total = mysqli_fetch_assoc(mysqli_query($conn, $sql));
             $r = [
-                $row['nama_kategori'] . " ($total)",
-                $total
+                $row['nama_kategori'] . " (${total['sisa']})",
+                (int)$total['sisa'] ?: 0
             ];
             array_push($data, $r);
         }
         echo json_encode($data);
     }
 
-    if ($_POST['dataTotal'] == 1) {
+    function pieKomponen($conn, $jenis = "total")
+    {
+        $data = [];
+        $head = ['Kategori', 'Jumlah'];
+        array_push($data, $head);
+        $result = $conn->query("SELECT * FROM  kategori WHERE tipe = 'komponen'");
+
+        while ($row = $result->fetch_assoc()) {
+            $kategori = $row['id_kategori'];
+
+            if ($jenis == "alokasi") {
+                $sql = "SELECT SUM(qty) as sisa FROM komponen_aset as a
+                        LEFT JOIN komponen as b ON a.id_komponen = b.id
+                        WHERE b.id_kategori = '$kategori'";
+            } else if ($jenis == "gudang") {
+                $sql = "SELECT SUM(sisa) as sisa FROM komponen WHERE id_kategori = '$kategori'";
+            } else {
+                $sql = "SELECT SUM(stok) as sisa FROM komponen WHERE id_kategori = '$kategori'";
+            }
+            $total = mysqli_fetch_assoc(mysqli_query($conn, $sql));
+            $r = [
+                $row['nama_kategori'] . " (${total['sisa']})",
+                (int)$total['sisa'] ?: 0
+            ];
+            array_push($data, $r);
+        }
+        echo json_encode($data);
+    }
+
+    if ($_POST['dataTotal'] == "default") {
         pieAsset($conn);
-    } else {
+    } else if ($_POST['dataTotal'] == "filter") {
         $d = $_POST['barang'];
-        $j = $_POST['jenis'];
-        if ($d = "asset") {
+        @$j = $_POST['jenis'];
+        if ($d == "asset") {
             pieAsset($conn, $j);
         } else if ($d == "consumable") {
-            if ($j = "total") {
-            } else if ($j == "alokasi") {
-            }
+            pieConsumable($conn);
         } else if ($d == "komponen") {
-            if ($j = "total") {
-            } else if ($j == "alokasi") {
+            pieKomponen($conn, $j);
+        }
+    }
+}
+
+if (isset($_POST['perbaikan'])) {
+    $data = [];
+    $date = date('Y');
+
+    if ($_POST['perbaikan'] == "All" or $_POST['kategori'] == "All") {
+        $result = $conn->query("SELECT * FROM  data_kategori");
+        $kategori = ['Bulan'];
+        while ($kat = $result->fetch_assoc()) {
+            array_push($kategori, strtoupper($kat['kd_kategori']));
+        }
+
+        for ($i = 0; $i <= count($bulan); $i++) {
+            if ($i == 0) {
+                array_push($data, $kategori);
+            } else {
+                $r = [$bulan[$i]];
+                for ($j = 1; $j < count($kategori); $j++) {
+                    $kd = $kategori[$j];
+                    $sql = "SELECT count(keluhan) as total FROM perbaikan as a
+                        LEFT JOIN data_aset as b ON a.no_aset = b.no_aset
+                        WHERE b.kd_kategori = '$kd' AND tgl_masuk LIKE '$date-%$i-__' ";
+                    $keluhan = ($conn->query($sql))->fetch_assoc();
+                    array_push($r, (int)$keluhan['total']);
+                }
+                array_push($data, $r);
+            }
+        }
+    } else {
+        $kd = $_POST['kategori'];
+
+        for ($i = 0; $i <= count($bulan); $i++) {
+            if ($i == 0) {
+                $head = ($conn->query("SELECT nama_kategori as nama FROM data_kategori WHERE kd_kategori = '$kd'"))->fetch_assoc();
+                array_push($data, ['Bulan', $head['nama']]);
+            } else {
+                $sql = "SELECT count(keluhan) as total FROM perbaikan as a
+                        LEFT JOIN data_aset as b ON a.no_aset = b.no_aset
+                        WHERE b.kd_kategori = '$kd' AND tgl_masuk LIKE '$date-%$i-__' ";
+                $keluhan = ($conn->query($sql))->fetch_assoc();
+                array_push($data, [$bulan[$i], (int)$keluhan['total']]);
             }
         }
     }
+
+    echo json_encode($data);
 }

@@ -132,14 +132,23 @@
 							<div class="form-group">
 								<div class="row">
 									<div class="col-md-3 col-md-offset-4">
-										<select name="barang" class="form-control" title="Pilih Data">
+										<select id="barang" name="barang" class="form-control" title="Pilih Data">
 											<option value="asset">Data Asset</option>
 											<option value="consumable">Data Consumable</option>
 											<option value="komponen">Data Komponen</option>
 										</select>
+										<script>
+											document.getElementById('barang').addEventListener('change', function() {
+												if (this.value == "consumable") {
+													document.getElementById('jenis').disabled = true;
+												} else {
+													document.getElementById('jenis').disabled = false;
+												}
+											})
+										</script>
 									</div>
 									<div class="col-md-3">
-										<select name="jenis" class="form-control" title="Pilih Jenis">
+										<select id="jenis" name="jenis" class="form-control" title="Pilih Jenis">
 											<option value="total">Total</option>
 											<option value="alokasi">Alokasi</option>
 											<option value="gudang">Gudang</option>
@@ -162,6 +171,26 @@
 		<div class="row">
 			<div class="col-md-12">
 				<h4 class="text-center"> Data Perbaikan Tahun <?= date('Y') ?></h4>
+				<form class="form" id="perbaikanFilter">
+					<input type="hidden" name="perbaikan" value="filter">
+					<div class="form-group">
+						<div class="row">
+							<div class="col-md-3 col-md-offset-7">
+								<select id="service-kat" name="kategori" class="form-control" title="Pilih Kategori">
+									<option value="All" selected>All</option>
+									<?php
+									$result = $conn->query("SELECT kd_kategori as kd,nama_kategori as nama FROM data_kategori");
+									while ($r = $result->fetch_assoc()) { ?>
+										<option value="<?= strtoupper($r['kd']) ?>"><?= $r['nama'] ?></option>
+									<?php } ?>
+								</select>
+							</div>
+							<div class="col-md-2">
+								<button name="perbaikan" value="filter" class="btn btn-success">Tampilkan</button>
+							</div>
+						</div>
+					</div>
+				</form>
 				<div style="width: 750px; margin: auto;margin-top: 15px;margin-bottom: 15px;" id="perbaikanChart">
 				</div>
 			</div>
@@ -175,23 +204,29 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<h4 class="text-center"> Data Consumable Tahun <?= date('Y') ?></h4>
-				<div class="row">
-					<div class="col-md-4 col-md-offset-4">
-						<select name="consum_chart" id="c_order_chart" class="selectpicker" data-live-search="true" title="Pilih Consumable">
-							<option value="All">All</option>
-							<?php
-							$a = $conn->query("SELECT id,kode_item, nama_consumable as nama 
+				<h4 class="text-center"> Trend Data Consumable Tahun <?= date('Y') ?></h4>
+				<form class="form" id="trendFilter">
+					<input type="hidden" name="trend" value="filter">
+					<div class="form-group">
+						<div class="row">
+							<div class="col-md-4 col-md-offset-6">
+								<select name="id_consum" class="selectpicker" data-live-search="true" title="Pilih Consumable">
+									<option value="All">All</option>
+									<?php
+									$a = $conn->query("SELECT id,kode_item, nama_consumable as nama 
 										FROM consumable");
-							while ($s = mysqli_fetch_assoc($a)) {
-								echo "<option value='${s['id']}'>${s['kode_item']} - ${s['nama']}</option>";
-							}
-							?>
-						</select>
+									while ($s = mysqli_fetch_assoc($a)) {
+										echo "<option value='${s['id']}'>${s['kode_item']} - ${s['nama']}</option>";
+									}
+									?>
+								</select>
+							</div>
+							<div class="col-md-2">
+								<button name="trend" value="filter" class="btn btn-success">Tampilkan</button>
+							</div>
+						</div>
 					</div>
-
-				</div>
-
+				</form>
 				<div style="width: 750px;height: 300px; margin: auto;margin-top: 15px;margin-bottom: 15px;" id="consumableChart">
 				</div>
 			</div>
@@ -213,9 +248,13 @@
 
 		google.charts.setOnLoadCallback(function() {
 			drawPie1Chart();
+			drawPerbaikanChart();
+			drawKonsum2();
 		});
 		// DRAW PIE CHART
-		function drawPie1Chart(data = {'dataTotal': 1}) {
+		function drawPie1Chart(data = {
+			'dataTotal': "default"
+		}) {
 
 			let json = $.ajax({
 				url: "template/chart.php",
@@ -246,7 +285,105 @@
 		$("#pieFilter").submit(function(e) {
 			e.preventDefault();
 			drawPie1Chart($(this).serialize());
-			
+
 		});
+
+		function drawPerbaikanChart(data = {
+			'perbaikan': "All"
+		}) {
+
+			let json = $.ajax({
+				url: "template/chart.php",
+				type: "POST",
+				dataType: "json",
+				data: data,
+				async: false
+			}).responseText;
+
+			var data = google.visualization.arrayToDataTable($.parseJSON(json));
+
+			var options = {
+				width: "100%",
+				height: 300,
+				animation: {
+					startup: true,
+					duration: 1000,
+					easing: 'out',
+				},
+				hAxis: {
+					title: 'Bulan'
+				},
+				vAxis: {
+					title: 'Keluhan',
+				},
+				bar: {
+					groupWidth: "75%"
+				},
+				legend: {
+					position: "bottom"
+				}
+			};
+
+			var barChart = new google.visualization.ColumnChart(document.getElementById('perbaikanChart'));
+			barChart.draw(data, options);
+		}
+
+		$("#perbaikanFilter").submit(function(e) {
+			e.preventDefault();
+			drawPerbaikanChart($(this).serialize());
+
+		});
+
+		function drawKonsum2(data = {"id_consum":"All"}) {
+
+			let json = $.ajax({
+				url: "template/chart.php",
+				type: "POST",
+				dataType: "json",
+				data: data,
+				async: false
+			}).responseText;
+
+			var data2 = google.visualization.arrayToDataTable($.parseJSON(json));
+			if (data.id_consum == "All") {
+				var series = {}
+			} else {
+				var series = {
+					1: {
+						lineDashStyle: [2, 2]
+					}
+				};
+			}
+			console.log(data);
+
+			var options = {
+				title: null,
+				animation: {
+					duration: 1000,
+					easing: 'out',
+					startup: true,
+				},
+				legend: {
+					position: 'bottom'
+				},
+				series: series,
+				hAxis: {
+					title: 'Bulan'
+				},
+				vAxis: {
+					title: 'Stok',
+					minValue: 0
+				}
+			};
+
+			var chart = new google.visualization.LineChart(document.getElementById('consumableChart'));
+			chart.draw(data2, options);
+		}
+
+		$('#trendFilter').on("submit", function(e) {
+			e.preventDefault();
+			drawKonsum2($(this).serialize());
+		});
+
 	})
 </script>
