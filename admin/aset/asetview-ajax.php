@@ -1,7 +1,9 @@
 <?php
 /* Database connection start */
 include ("../../konekdb.php");
-$sq="SELECT * FROM data_aset";
+$sq="SELECT data_aset.*,a.nama_bag,b.nama_karyawan as nama FROM data_aset
+    LEFT JOIN data_uker_bagian as a ON a.kd_bag = data_aset.kd_uker
+    LEFT JOIN data_karyawan as b ON b.nik = data_aset.nik";
 /* Database connection end */ 
 if(isset($_POST['kategori'])){
 	 $kd=$_POST['kategori'] ;
@@ -39,18 +41,15 @@ if ($requestData['length']=="-1"){
 
 $columns = array( 
 // datatable column index  => database column name
-   0 => 'no_aset', 
+    0 => 'no_aset', 
     1 => 'kd_kategori',
     2 => 'tahun',
     3 => 'model',
-    4 => 'kd_uker',
-    5 => 'nama_unitkerja',
-    6 => 'nik',
-    7 => 'nama_karyawan',
-    8 => 'status',
-   9 => 'nama_unitkerja',
-    10 => 'nama_uker',
-    11 => 'lokasi'
+    4 => 'nik',
+    5 => 'nama',
+    6 => 'kd_uker',
+    7 => 'nama_bag',
+    8 => 'lokasi'
 	
 );
 
@@ -60,7 +59,6 @@ $columns = array(
 $query=mysqli_query($conn, $sql1) or die("asetview-ajax.php: get InventoryItems");
 $totalData = mysqli_num_rows($query);
 $totalFiltered = $totalData;  // when there is no search parameter then total number rows = total number filtered rows.
-
 
 if( !empty($requestData['search']['value']) ) {
     // if there is a search parameter
@@ -73,8 +71,8 @@ if( !empty($requestData['search']['value']) ) {
     $sql.=" OR " .$sql3. "  model LIKE '%".$requestData['search']['value']."%'";
     $sql.=" OR " .$sql3. "  data_aset.nik LIKE '%".$requestData['search']['value']."%'";
     $sql.=" OR " .$sql3. "  data_aset.kd_uker LIKE '%".$requestData['search']['value']."%'";
-    $sql.=" OR " .$sql3. "  nama_unitkerja LIKE '%".$requestData['search']['value']."%'";
-    $sql.=" OR " .$sql3. "  nama_karyawan LIKE '%".$requestData['search']['value']."%'";
+    $sql.=" OR " .$sql3. "  a.nama_bag LIKE '%".$requestData['search']['value']."%'";
+    $sql.=" OR " .$sql3. "  b.nama_karyawan LIKE '%".$requestData['search']['value']."%'";
     $sql.=" OR " .$sql3. "  status LIKE '%".$requestData['search']['value']."%'";
     $sql.=" OR " .$sql3. "  lokasi LIKE '%".$requestData['search']['value']."%'";
     $query=mysqli_query($conn, $sql) or die(mysqli_error($conn));
@@ -102,9 +100,9 @@ while( $row=mysqli_fetch_array($query) ) {  // preparing an array
 	$nestedData[] = $row["tahun"];
     $nestedData[] = $row["model"];
     $nestedData[] = $row["nik"];
-    $nestedData[] = $row["nama_karyawan"]; 
+    $nestedData[] = $row["nama"]; 
     $nestedData[] = $row["kd_uker"] ; 
-    $nestedData[] = $row["nama_unitkerja"] ; 
+    $nestedData[] = $row["nama_bag"] ; 
     $nestedData[] = $row["lokasi"] ; 
  	
     $nestedData[] = '<td> 

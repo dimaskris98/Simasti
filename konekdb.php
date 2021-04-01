@@ -4,7 +4,7 @@ session_start();
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "dbsimasti";
+$db = "mgsimasti";
 
 
 // menghubungkan ke db

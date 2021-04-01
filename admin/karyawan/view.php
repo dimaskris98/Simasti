@@ -2,8 +2,13 @@
     if (isset($_GET['nik'])) {
         $no = $_GET['nik'];
 
-        $data = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM data_karyawan WHERE nik='$no'"));
+        $sql = "SELECT a.*,b.nama_bag as bagian,c.kd_uker as kd_dep, c.nama_uker as dep FROM data_karyawan as a 
+                LEFT JOIN data_uker_bagian as b ON a.kd_uker = b.kd_bag
+                LEFT JOIN data_uker as c ON b.kd_uker = c.kd_uker
+                WHERE a.nik='$no'";
 
+        $data = mysqli_fetch_array(mysqli_query($conn, $sql));
+        echo  $conn->error;
 
     ?>
      <section class="content-header">
@@ -115,12 +120,12 @@
                                                      </tr>
                                                      <tr>
                                                          <td>Department</td>
-                                                         <td><a href="lokasi?aset=<?php echo $data['kd_uker']; ?>"><?php echo $data['dep']; ?></a>
+                                                         <td><a href="lokasi?aset=<?php echo $data['kd_dep']; ?>"><?php echo $data['dep']; ?></a>
                                                          </td>
                                                      </tr>
                                                      <tr>
                                                          <td>Bagian</td>
-                                                         <td><a href="lokasi?aset=<?php echo $data['kd_uker']; ?>"><?php echo $data['nama_unitkerja']; ?></a>
+                                                         <td><a href="lokasi?aset=<?php echo $data['kd_uker']; ?>"><?php echo $data['bagian']; ?></a>
                                                          </td>
                                                      </tr>
                                                  </tbody>
@@ -334,17 +339,12 @@
                                 }
                                 ?></h1>
          <div class="pull-right">
-
-             <form role="form" action="karyawan-add" method="POST" enctype="multipart/form-data">
-                 <a href="update-manual" class="btn btn-primary btn-md">Update Otomatis</a>
-             </form>
          </div>
          <div class="pull-right">
 
              <form role="form" action="karyawan-add" method="POST" enctype="multipart/form-data">
                  <a href="<?= $tombol ?>" class="btn btn-default"><?= $tombol ?> </a>
                  <button type="submit" name="karyawan-add" class="btn btn-primary btn-md">Tambah Karyawan</button>
-                 <a href="update-karyawan" class="btn btn-primary btn-md">Update Karyawan</a>
              </form>
          </div>
 

@@ -132,14 +132,14 @@
 							<div class="form-group">
 								<div class="row">
 									<div class="col-md-3 col-md-offset-4">
-										<select id="barang" name="barang" class="form-control" title="Pilih Data">
+										<select id="barang" name="barang" class="form-control " title="Pilih Data">
 											<option value="asset">Data Asset</option>
 											<option value="consumable">Data Consumable</option>
 											<option value="komponen">Data Komponen</option>
 										</select>
 										<script>
 											document.getElementById('barang').addEventListener('change', function() {
-												if (this.value == "consumable") {
+												if (this.value == "consumable" || this.value == "komponen" ) {
 													document.getElementById('jenis').disabled = true;
 												} else {
 													document.getElementById('jenis').disabled = false;
@@ -195,13 +195,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<h4 class="text-center"> Data Komponen </h4>
-				<div style="width: 700px;margin:auto;margin-top: 15px;margin-bottom: 15px;" id="komponenChart">
-				</div>
-			</div>
-		</div>
+
 		<div class="row">
 			<div class="col-md-12">
 				<h4 class="text-center"> Trend Data Consumable Tahun <?= date('Y') ?></h4>
@@ -345,7 +339,8 @@
 			}).responseText;
 
 			var data2 = google.visualization.arrayToDataTable($.parseJSON(json));
-			if (data.id_consum == "All") {
+			console.log($('[name="id_consum"]').val());
+			if ($('[name="id_consum"]').val() == "All" || data.id_consum == "All" ) {
 				var series = {}
 			} else {
 				var series = {
@@ -354,7 +349,6 @@
 					}
 				};
 			}
-			console.log(data);
 
 			var options = {
 				title: null,

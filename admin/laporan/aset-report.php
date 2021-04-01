@@ -89,26 +89,17 @@
 	if (isset($_POST['submit'])) {
 		$kduker = $_POST['uker'];
 		$newkd = substr($kduker, 0, 3);
-		$terisi = mysqli_fetch_array(mysqli_query($conn, "Select (g1+g2+g3+g4+g5+g6+g7+gpk) AS totalisi From data_uker where kd_uker='$kduker'"));
-		$terisiNonOrganik = mysqli_fetch_array(mysqli_query($conn, "Select SUM(non_organik_bag) AS totalisiNonOrganik From data_uker_bagian where kd_uker='$kduker'"));
-		$formasibag = mysqli_fetch_array(mysqli_query($conn, "Select SUM(formasi) AS total From data_uker_bagian where kd_uker='$kduker'"));
-		$formasibagnonorganik = mysqli_fetch_array(mysqli_query($conn, "Select SUM(formasi_non_organik) AS formasi_non_organik From data_uker_bagian where kd_uker='$kduker'"));
-		$jumlahaset = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_uker = '$kduker'"));
 		$res = $conn->query("SELECT * FROM  data_uker where kd_uker='$kduker'");
 		//SELECT * , data_uker_bagian.* FROM  data_uker INNER JOIN data_uker_bagian ON data_uker.kd_uker=data_uker_bagian.kd_uker where data_uker.kd_uker='$kduker'	 
 		$uker = [];
 		$f = true;
 		while ($ker = $res->fetch_assoc()) {
 			$uker = $ker;
-			$totalformasi = $formasibag['total'] + $ker['formasi_uker'];
-			$totalFormasiNonOrganik = $formasibagnonorganik['formasi_non_organik'] + $ker['formasi_non_organik'];
-			$totalterisiNonOrganik = $terisiNonOrganik['totalisiNonOrganik'] + $ker['non_organik'];
 		}
 		if (empty($uker)) {
-			$sql = "SELECT nama_bag as nama_uker, kd_bag as kd_uker, formasi as formasi_uker
+			$sql = "SELECT nama_bag as nama_uker, kd_bag as kd_uker
 					FROM  data_uker_bagian where kd_bag='$kduker'";
 			$uker = mysqli_fetch_assoc($conn->query($sql));
-			$totalformasi = $uker['formasi_uker'];
 			$f = false;
 		}
 	?>
@@ -146,7 +137,10 @@
 							<tbody>
 								<?php
 								$sqlUker = "SELECT kd_bag FROM data_uker_bagian WHERE kd_uker = '$kduker'";
-								$sql = "SELECT * FROM data_aset WHERE kd_uker = '$kduker' OR kd_uker IN ($sqlUker)";
+								$sql = "SELECT a.*, c.nama_karyawan as nama,b.nama_bag FROM data_aset as a
+										LEFT JOIN data_uker_bagian as b ON a.kd_uker = b.kd_bag
+										LEFT JOIN data_karyawan as c ON a.nik = c.nik
+										WHERE a.kd_uker IN ($sqlUker)";
 								if (!($query = mysqli_query($conn, $sql))) {
 									echo mysqli_error($conn);
 								};
@@ -156,9 +150,9 @@
 										<td class="text-center" scope="row"><?= $no ?></td>
 										<td><a href="aset-detail?no=<?= $row['no'] ?>"><?= $row['no_aset'] ?></a></td>
 										<td><?= $row['model'] ?></td>
-										<td><?= $row['nama_unitkerja'] ?></td>
+										<td><?= $row['nama_bag'] ?></td>
 										<td><?= $row['nik'] ?></td>
-										<td><?= $row['nama_karyawan'] ?></td>
+										<td><?= $row['nama'] != null ? $row['nama'] : $row['nama_karyawan'] ?></td>
 										<td class="text-center"><?= $row['sewa'] == "1" ? "Ya" : "Tidak" ?></td>
 									</tr>
 								<?php $no++;
@@ -177,11 +171,10 @@
 					<div class="row" style="width: 75%;margin: auto;">
 						<h4 class="text-center"><strong>LAPORAN TOTAL ASET</strong></h4>
 						<div class="clearfix"></div>
-						<table class="table table-hover table-responsive table-condensed table-bordered table-striped laporan">
+						<table style="width: 100%;" class="table table-hover table-responsive table-condensed table-bordered table-striped laporan">
 							<thead>
 								<tr class="info">
 									<th rowspan="3">Nama Unit Kerja/Bagian</th>
-									<th rowspan="3">Formasi</th>
 									<th colspan="9">Jumlah Aset</th>
 								</tr>
 								<tr class="info">
@@ -202,25 +195,6 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<td><a href="#<?= $uker['kd_uker'] ?>"><?= $uker['nama_uker'] ?></a></td>
-									<td align="center"><?= $uker['formasi_uker'] ?></td>
-									<?php
-									$res = $conn->query("SELECT * FROM data_kategori ORDER BY id ASC");
-									while ($row = $res->fetch_assoc()) {
-										$kdkat = $row['kd_kategori'];
-										$tot = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset
-													WHERE data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'"));
-										if ($kdkat == 'cp') {
-											$pcaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_uker='$kduker' and kd_kategori = 'cp' and sewa='0'"));
-											$pcsewa = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_uker='$kduker' and kd_kategori = 'cp' and sewa='1'"));
-											echo '<td align="center">' . $pcaset . ' </td>
-														  <td align="center">' . $pcsewa . ' </td>';
-										} else {
-											echo '<td align="center">' . $tot . ' </td>';
-										}
-									} ?>
-								</tr>
 								<?php
 								$showbag = $conn->query("SELECT * FROM data_uker_bagian where kd_uker='$kduker'");
 								while ($rowbag = $showbag->fetch_assoc()) {
@@ -228,7 +202,6 @@
 									$totalasetbagian = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_uker = '$kdbag'")); ?>
 									<tr>
 										<td><a href="#<?= $kdbag ?>"><?= $rowbag['nama_bag'] ?></a></td>
-										<td align="center"><?= $rowbag['formasi'] ?></td>
 										<?php
 										$res = $conn->query("SELECT * FROM data_kategori ORDER BY id ASC");
 										while ($row = $res->fetch_assoc()) {
@@ -248,7 +221,6 @@
 							<tfoot>
 								<tr class="info">
 									<td>Sub Total<br></td>
-									<td align="center"><?= $totalformasi ?><br></td>
 									<?php
 									$totalall = 0;
 									$totalpg = 0;
@@ -256,12 +228,12 @@
 									$res = $conn->query("SELECT * FROM data_kategori ORDER BY id ASC ");
 									while ($row = $res->fetch_assoc()) {
 										$kdkat = $row['kd_kategori'];
-										if ($kdkat == 'cp') {
-											$pcaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_uker='$kduker' and kd_kategori = 'cp' and sewa='0'"));
-											$pcsewa = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_uker='$kduker' and kd_kategori = 'cp' and sewa='1'"));
-										} else {
-											$dep = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_kategori='$kdkat' AND kd_uker = '$kduker'"));
-										}
+										// if ($kdkat == 'cp') {
+										// 	$pcaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_uker='$kduker' and kd_kategori = 'cp' and sewa='0'"));
+										// 	$pcsewa = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_uker='$kduker' and kd_kategori = 'cp' and sewa='1'"));
+										// } else {
+										// 	$dep = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset WHERE kd_kategori='$kdkat' AND kd_uker = '$kduker'"));
+										// }
 										$totalbg = 0;
 										$totalbgpg = 0;
 										$totalbgsewa = 0;
@@ -281,9 +253,12 @@
 											$totalbg += $pc;
 										}
 
-										$totalall = $totalbg + $dep;
-										$totalpg = $totalbgpg + $pcaset;
-										$totalsewa = $totalbgsewa + $pcsewa;
+										// $totalall = $totalbg + $dep;
+										$totalall = $totalbg;
+										// $totalpg = $totalbgpg + $pcaset;
+										$totalpg = $totalbgpg;
+										// $totalsewa = $totalbgsewa + $pcsewa;
+										$totalsewa = $totalbgsewa;
 										if ($kdkat == 'cp') {
 											echo '<td align="center">' . $totalpg . '<br></td><td align="center">' . $totalsewa . '<br></td>';
 										} else {
@@ -320,7 +295,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
+								<!-- <tr>
 									<td><a href="#<?= $uker['kd_uker']; ?>"><?= $uker['nama_uker']; ?></a></td>
 									<?php
 									//kebutuhan
@@ -338,7 +313,7 @@
 											}
 										}
 									} ?>
-								</tr>
+								</tr> -->
 								<?php
 								$showbag = $conn->query("SELECT * FROM  data_uker_bagian where kd_uker='$kduker'");
 								while ($rowbag = $showbag->fetch_assoc()) {
@@ -390,8 +365,9 @@
 				<div class="tables">
 					<?php
 					$no1 = 1;
-					$totalasetdep = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_uker='$kduker'"));
+					$totalasetdep = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_uker IN ($sqlUker)"));
 					//var_dump($uker);
+					$sqlUker = "SELECT kd_bag FROM data_uker_bagian WHERE kd_uker = '$kduker'";
 					if ($f) { ?>
 						<div class="row" id="<?= $kduker ?>">
 							<h4 class="text-center"><strong>LAPORAN <?= $uker['nama_uker'] ?> </strong></h4>
@@ -401,18 +377,20 @@
 							$res = $conn->query("SELECT * FROM data_kategori  ORDER BY id ASC");
 							while ($row = $res->fetch_assoc()) {
 								$kdkat = $row['kd_kategori'];
-								$sql = "SELECT * FROM data_aset WHERE data_aset.kd_uker='${uker['kd_uker']}' and data_aset.kd_kategori='$kdkat'";
+								// $sql = "SELECT * FROM data_aset WHERE data_aset.kd_uker='${uker['kd_uker']}' and data_aset.kd_kategori='$kdkat'";
+								$sql = "SELECT * FROM data_aset WHERE data_aset.kd_uker IN ($sqlUker) and data_aset.kd_kategori='$kdkat'";
 								$tot = mysqli_num_rows(mysqli_query($conn, $sql));
 								if ($tot > 0) {
 									if (strtoupper($kdkat) == "CP") { ?>
 										<div class="col-md-12">
 											<p class="tebal"> <?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
 											<?php
-											$sql = "SELECT proc, count(proc) as totproc FROM data_aset WHERE data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc";
-											$th = $conn->query($sql);
-											while ($rowth = $th->fetch_assoc()) {
-												echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
-											} ?>
+											// $sql = "SELECT proc, count(proc) as totproc FROM data_aset WHERE data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc";
+											// $th = $conn->query($sql);
+											// while ($rowth = $th->fetch_assoc()) {
+											// 	echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
+											// } 
+											?>
 											<table id="U<?= $kduker . $kdkat ?>" style="width: 100%;" class="table table-responsive table-hover table-striped table-bordered">
 												<thead>
 													<tr class="info">
@@ -435,8 +413,9 @@
 												<tbody>
 													<?php
 													$no = 1;
-													$res1 = $conn->query("SELECT data_aset.*  FROM data_aset 
-																WHERE data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
+													$res1 = $conn->query("SELECT a.*,c.nama_karyawan as nama  FROM data_aset as a
+																LEFT JOIN data_karyawan as c ON a.nik = c.nik
+																WHERE a.kd_uker IN ($sqlUker) and a.kd_kategori='$kdkat'
 																ORDER BY proc ASC");
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
@@ -447,7 +426,7 @@
 															<td><?= $row1['proc'] ?></td>
 															<td><?= $row1['ramhd'] ?></td>
 															<td><?= $row1['nik'] ?></td>
-															<td><?= $row1['nama_karyawan'] ?></td>
+															<td><?= $row1['nama'] ?></td>
 															<td align="center"><?= $row1['sewa'] == 0 ? "Tidak" : "Ya" ?></td>
 															<td><?php
 																$id_monitor = $row1['id_monitor'];
@@ -464,7 +443,14 @@
 												document.addEventListener("DOMContentLoaded", function() {
 													$('#U<?= $kduker . $kdkat ?>').DataTable({
 														"ordering": false,
-														dom: '<"kanan"B>t',
+														"lengthMenu": [
+															[10, 25, 50, 100, -1],
+															[10, 25, 50, 100, "All"]
+														],
+														"paging": true,
+														"pagingType": "full_numbers",
+														"pageLength": 10,
+														dom: '<"kanan"B>ltp',
 														buttons: [{
 															extend: 'print',
 															text: '<span class="fa fa-print" aria-hidden="true"></span>',
@@ -473,7 +459,7 @@
 															orientation: 'landscape'
 														}, {
 															extend: 'excel',
-															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$uker['nama_uker']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+															title: 'LAPORAN ASET <?= $row['nama_kategori'] . " " . $uker['nama_uker'] . " " . $bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
 														}, 'copy', 'csv', 'pdf']
 													});
 												});
@@ -485,11 +471,12 @@
 										<div class="col-md-12">
 											<p class="tebal"><?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
 											<?php
-											$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-													where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-											while ($rowth = $th->fetch_assoc()) {
-												echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-											} ?>
+											// $th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
+											// 		where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
+											// while ($rowth = $th->fetch_assoc()) {
+											// 	echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
+											// } 
+											?>
 											<table id="U<?= $kduker . $kdkat ?>" style="width: 100%;" class="table table-bordered table-hover table-responsive table-striped">
 												<thead>
 													<tr class="info" height="20px">
@@ -507,16 +494,17 @@
 												<tbody>
 													<?php
 													$no = 1;
-													$res1 = $conn->query("SELECT *  FROM data_aset 
-															where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
-															ORDER BY proc ASC");
+													$res1 = $conn->query("SELECT a.*,c.nama_karyawan as nama  FROM data_aset as a
+																LEFT JOIN data_karyawan as c ON a.nik = c.nik
+																WHERE a.kd_uker IN ($sqlUker) and a.kd_kategori='$kdkat'
+																ORDER BY proc ASC");
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<th scope="row"><?= $no ?></th>
 															<td><a href="aset-detail?no=<?= $row1['no'] ?>"><?= $row1['no_aset'] ?></a></td>
 															<td><?= $row1['model'] ?></td>
 															<td><?= $row1['nik'] ?></td>
-															<td><?= $row1['nama_karyawan'] ?></td>
+															<td><?= $row1['nama'] ?></td>
 															<td align="center"><?= $row1['sewa'] == "1" ? "Ya" : "Tidak" ?></td>
 														</tr>
 													<?php $no++;
@@ -527,7 +515,14 @@
 												document.addEventListener("DOMContentLoaded", function() {
 													$('#U<?= $kduker . $kdkat ?>').DataTable({
 														"ordering": false,
-														dom: '<"kanan"B>t',
+														"lengthMenu": [
+															[10, 25, 50, 100, -1],
+															[10, 25, 50, 100, "All"]
+														],
+														"paging": true,
+														"pagingType": "full_numbers",
+														"pageLength": 10,
+														dom: '<"kanan"B>ltp',
 														buttons: [{
 															extend: 'print',
 															text: '<span class="fa fa-print" aria-hidden="true"></span>',
@@ -536,7 +531,7 @@
 															orientation: 'landscape'
 														}, {
 															extend: 'excel',
-															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$uker['nama_uker']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+															title: 'LAPORAN ASET <?= $row['nama_kategori'] . " " . $uker['nama_uker'] . " " . $bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
 														}, 'copy', 'csv', 'pdf']
 													});
 												});
@@ -548,13 +543,14 @@
 										<div class="col-md-12">
 											<p class="tebal"><?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
 											<?php
-											if (strtoupper($kdkat) == "NB") {
-												$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-														where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-												while ($rowth = $th->fetch_assoc()) {
-													echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-												}
-											} ?>
+											// if (strtoupper($kdkat) == "NB") {
+											// 	$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
+											// 			where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
+											// 	while ($rowth = $th->fetch_assoc()) {
+											// 		echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
+											// 	}
+											// } 
+											?>
 											<table style="width: 100%;" id="U<?= $kduker . $kdkat ?>" class="table table-striped table-bordered table-hover table-condensed">
 												<thead>
 													<tr class="info">
@@ -586,9 +582,10 @@
 												<tbody>
 													<?php
 													$no = 1;
-													$res1 = $conn->query("SELECT *  FROM data_aset 
-																	where data_aset.kd_uker='$kduker' and data_aset.kd_kategori='$kdkat'
-																	ORDER BY tahun ASC");
+													$res1 = $conn->query("SELECT a.*,c.nama_karyawan as nama  FROM data_aset as a
+																LEFT JOIN data_karyawan as c ON a.nik = c.nik
+																WHERE a.kd_uker IN ($sqlUker) and a.kd_kategori='$kdkat'
+																ORDER BY tahun ASC");
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<th scope="row"> <?= $no ?></th>
@@ -603,7 +600,7 @@
 																echo '';
 															} ?>
 															<td><?= $row1['nik'] ?></td>
-															<td><?= $row1['nama_karyawan'] ?></td>
+															<td><?= $row1['nama'] ?></td>
 														</tr>
 													<?php $no++;
 													} ?>
@@ -613,7 +610,14 @@
 												document.addEventListener("DOMContentLoaded", function() {
 													$('#U<?= $kduker . $kdkat ?>').DataTable({
 														"ordering": false,
-														dom: '<"kanan"B>t',
+														"lengthMenu": [
+															[10, 25, 50, 100, -1],
+															[10, 25, 50, 100, "All"]
+														],
+														"paging": true,
+														"pagingType": "full_numbers",
+														"pageLength": 10,
+														dom: '<"kanan"B>ltp',
 														buttons: [{
 															extend: 'print',
 															text: '<span class="fa fa-print" aria-hidden="true"></span>',
@@ -622,7 +626,7 @@
 															orientation: 'landscape'
 														}, {
 															extend: 'excel',
-															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$uker['nama_uker']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+															title: 'LAPORAN ASET <?= $row['nama_kategori'] . " " . $uker['nama_uker'] . " " . $bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
 														}, 'copy', 'csv', 'pdf']
 													});
 												});
@@ -637,7 +641,7 @@
 						</div>
 						<hr />
 					<?php }
-					$showbag = $conn->query("SELECT * FROM  data_uker_bagian where kd_uker='$kduker' OR kd_bag = '$kduker'");
+					$showbag = $conn->query("SELECT * FROM  data_uker_bagian where kd_uker='$kduker'");
 					while ($rowbag = $showbag->fetch_assoc()) {
 						$kdbag = $rowbag['kd_bag'];
 						$totalaset = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset 
@@ -660,11 +664,12 @@
 										<div class="col-md-12">
 											<p class="tebal"> <?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
 											<?php
-											$sql = "SELECT proc, count(proc) as totproc FROM data_aset WHERE data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc";
-											$th = $conn->query($sql);
-											while ($rowth = $th->fetch_assoc()) {
-												echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
-											} ?>
+											// $sql = "SELECT proc, count(proc) as totproc FROM data_aset WHERE data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc";
+											// $th = $conn->query($sql);
+											// while ($rowth = $th->fetch_assoc()) {
+											// 	echo "<a><i>${rowth['proc']} - ${rowth['totproc']} unit, </i></a>";
+											// } 
+											?>
 											<table style="width: 100%;" id="<?= $kdbag . $kdkat ?>" class="table table-responsive table-hover table-striped table-bordered">
 												<thead>
 													<tr class="info">
@@ -687,8 +692,9 @@
 												<tbody>
 													<?php
 													$no = 1;
-													$res1 = $conn->query("SELECT * FROM data_aset  
-																WHERE data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'
+													$res1 = $conn->query("SELECT a.*,b.nama_karyawan as nama FROM data_aset as a
+																LEFT JOIN data_karyawan as b ON a.nik = b.nik
+																WHERE a.kd_uker='$kdbag' and a.kd_kategori='$kdkat'
 																ORDER BY proc ASC");
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
@@ -699,7 +705,7 @@
 															<td><?= $row1['proc'] ?></td>
 															<td><?= $row1['ramhd'] ?></td>
 															<td><?= $row1['nik'] ?></td>
-															<td><?= $row1['nama_karyawan'] ?></td>
+															<td><?= $row1['nama'] ?></td>
 															<td align="center"><?= $row1['sewa'] == 0 ? "Tidak" : "Ya" ?></td>
 															<td><?php
 																$id_monitor = $row1['id_monitor'];
@@ -716,7 +722,14 @@
 												document.addEventListener("DOMContentLoaded", function() {
 													$('#<?= $kdbag . $kdkat ?>').DataTable({
 														"ordering": false,
-														dom: '<"kanan"B>t',
+														"lengthMenu": [
+															[10, 25, 50, 100, -1],
+															[10, 25, 50, 100, "All"]
+														],
+														"paging": true,
+														"pagingType": "full_numbers",
+														"pageLength": 10,
+														dom: '<"kanan"B>ltp',
 														buttons: [{
 															extend: 'print',
 															text: '<span class="fa fa-print" aria-hidden="true"></span>',
@@ -725,7 +738,7 @@
 															orientation: 'landscape'
 														}, {
 															extend: 'excel',
-															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$rowbag['nama_bag']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+															title: 'LAPORAN ASET <?= $row['nama_kategori'] . " " . $rowbag['nama_bag'] . " " . $bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
 														}, 'copy', 'csv', 'pdf']
 													});
 												});
@@ -736,11 +749,12 @@
 										<div class="col-md-12">
 											<p class="tebal"><?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
 											<?php
-											$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-													where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-											while ($rowth = $th->fetch_assoc()) {
-												echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-											} ?>
+											// $th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
+											// 		where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
+											// while ($rowth = $th->fetch_assoc()) {
+											// 	echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
+											// } 
+											?>
 											<table style="width: 100%;" id="<?= $kdbag . $kdkat ?>" class="table table-bordered table-hover table-responsive table-striped">
 												<thead>
 													<tr class="info" height="20px">
@@ -758,16 +772,17 @@
 												<tbody>
 													<?php
 													$no = 1;
-													$res1 = $conn->query("SELECT *  FROM data_aset
-															where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'
-															ORDER BY proc ASC");
+													$res1 = $conn->query("SELECT a.*,b.nama_karyawan as nama FROM data_aset as a
+																LEFT JOIN data_karyawan as b ON a.nik = b.nik
+																WHERE a.kd_uker='$kdbag' and a.kd_kategori='$kdkat'
+																ORDER BY proc ASC");
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<th scope="row"><?= $no ?></th>
 															<td><a href="aset-detail?no=<?= $row1['no'] ?>"><?= $row1['no_aset'] ?></a></td>
 															<td><?= $row1['model'] ?></td>
 															<td><?= $row1['nik'] ?></td>
-															<td><?= $row1['nama_karyawan'] ?></td>
+															<td><?= $row1['nama'] ?></td>
 															<td align="center"><?= $row1['sewa'] == "1" ? "Ya" : "Tidak" ?></td>
 														</tr>
 													<?php $no++;
@@ -778,7 +793,14 @@
 												document.addEventListener("DOMContentLoaded", function() {
 													$('#<?= $kdbag . $kdkat ?>').DataTable({
 														"ordering": false,
-														dom: '<"kanan"B>t',
+														"lengthMenu": [
+															[10, 25, 50, 100, -1],
+															[10, 25, 50, 100, "All"]
+														],
+														"paging": true,
+														"pagingType": "full_numbers",
+														"pageLength": 10,
+														dom: '<"kanan"B>ltp',
 														buttons: [{
 															extend: 'print',
 															text: '<span class="fa fa-print" aria-hidden="true"></span>',
@@ -787,7 +809,7 @@
 															orientation: 'landscape'
 														}, {
 															extend: 'excel',
-															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$rowbag['nama_bag']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+															title: 'LAPORAN ASET <?= $row['nama_kategori'] . " " . $rowbag['nama_bag'] . " " . $bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
 														}, 'copy', 'csv', 'pdf']
 													});
 												});
@@ -798,13 +820,14 @@
 										<div class="col-md-12">
 											<p class="tebal"><?= $row['nama_kategori'] ?> : <?= $tot ?> Unit</p>
 											<?php
-											if (strtoupper($kdkat) == "NB") {
-												$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
-														where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
-												while ($rowth = $th->fetch_assoc()) {
-													echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
-												}
-											} ?>
+											// if (strtoupper($kdkat) == "NB") {
+											// 	$th = $conn->query("SELECT proc, count(proc) as totproc FROM data_aset 
+											// 			where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat' GROUP BY proc");
+											// 	while ($rowth = $th->fetch_assoc()) {
+											// 		echo '<a><i>' . $rowth['proc'] . ' - ' . $rowth['totproc'] . ' unit, </i></a>';
+											// 	}
+											// } 
+											?>
 											<table style="width: 100%;" id="<?= $kdbag . $kdkat ?>" class="table table-striped table-bordered table-hover table-condensed" width="100%">
 												<thead>
 													<tr class="info">
@@ -836,9 +859,10 @@
 												<tbody>
 													<?php
 													$no = 1;
-													$res1 = $conn->query("SELECT *  FROM data_aset
-																where data_aset.kd_uker='$kdbag' and data_aset.kd_kategori='$kdkat'
-																ORDER BY tahun ASC");
+													$res1 = $conn->query("SELECT a.*,b.nama_karyawan as nama FROM data_aset as a
+																	LEFT JOIN data_karyawan as b ON a.nik = b.nik
+																	WHERE a.kd_uker='$kdbag' and a.kd_kategori='$kdkat'
+																	ORDER BY tahun ASC");
 													while ($row1 = $res1->fetch_assoc()) { ?>
 														<tr>
 															<th scope="row"> <?= $no ?></th>
@@ -851,7 +875,7 @@
 																echo '';
 															} ?>
 															<td><?= $row1['nik'] ?></td>
-															<td><?= $row1['nama_karyawan'] ?></td>
+															<td><?= $row1['nama'] ?></td>
 														</tr>
 													<?php $no++;
 													} ?>
@@ -861,7 +885,14 @@
 												document.addEventListener("DOMContentLoaded", function() {
 													$('#<?= $kdbag . $kdkat ?>').DataTable({
 														"ordering": false,
-														dom: '<"kanan"B>t',
+														"lengthMenu": [
+															[10, 25, 50, 100, -1],
+															[10, 25, 50, 100, "All"]
+														],
+														"paging": true,
+														"pagingType": "full_numbers",
+														"pageLength": 10,
+														dom: '<"kanan"B>ltp',
 														buttons: [{
 															extend: 'print',
 															text: '<span class="fa fa-print" aria-hidden="true"></span>',
@@ -870,7 +901,7 @@
 															orientation: 'landscape'
 														}, {
 															extend: 'excel',
-															title: 'LAPORAN ASET <?= $row['nama_kategori']." ".$rowbag['nama_bag']." ".$bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
+															title: 'LAPORAN ASET <?= $row['nama_kategori'] . " " . $rowbag['nama_bag'] . " " . $bulanFull[date('n')] . " " . date('Y') ?>'.toUpperCase()
 														}, 'copy', 'csv', 'pdf']
 													});
 												});

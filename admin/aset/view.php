@@ -131,10 +131,10 @@ if ($_SESSION['user_login'] == "admin") {
 										<?php
 										$no = 1;
 										$asetDep = $conn->query("
-						SELECT c.*,a.nama_bag,b.nama_karyawan FROM data_aset as c
-						LEFT JOIN data_uker_bagian as a ON a.kd_bag = c.kd_uker
-						LEFT JOIN data_karyawan as b ON b.nik = c.nik
-						WHERE kd_kategori='$ktgr' AND proc LIKE '%$proc%' ORDER BY kd_uker ASC");
+												SELECT c.*,a.nama_bag,b.nama_karyawan FROM data_aset as c
+												LEFT JOIN data_uker_bagian as a ON a.kd_bag = c.kd_uker
+												LEFT JOIN data_karyawan as b ON b.nik = c.nik
+												WHERE kd_kategori='$ktgr' AND proc LIKE '%$proc%' ORDER BY kd_uker ASC");
 										while ($rowDep = $asetDep->fetch_assoc()) { ?>
 											<tr>
 												<td><?= $no; ?></td>

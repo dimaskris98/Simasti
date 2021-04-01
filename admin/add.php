@@ -18,9 +18,10 @@
 				$minqty = $_POST['minqty'];
 				$keterangan = $_POST['keterangan'];
 				//Memasukkan data
-				$sql = "INSERT INTO consumable 
+				$sql = "INSERT INTO consumable
+						(nama_consumable,id_kategori,id,manufaktur,warna,kode_item,no_model,sisa,minqty,keterangan)
 						VALUES 
-							('', '$nama', '$kategori', '$manufaktur', '$warna', '$item', '$model',$sisa, '$minqty','$keterangan')";
+							($nama', '$kategori', '$manufaktur', '$warna', '$item', '$model',$sisa, '$minqty','$keterangan')";
 				$query	= mysqli_query($conn, $sql);
 				if ($query) {
 					echo '<script>window.location="consumables"</script>';

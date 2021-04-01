@@ -157,23 +157,8 @@
  												</tr>
  											</thead>
  											<tbody>
- 												<tr>
- 													<td> 1 </td>
- 													<td>
- 														<a href="lokasi?aset=<?= $showuker['kd_uker'] ?>" title="Detail Aset"><?= $showuker['nama_uker'] ?></a>
- 													</td>
- 													<?php
-														$res = $conn->query("SELECT * FROM data_kategori ");
-														while ($row = $res->fetch_assoc()) {
-
-															$idkat = $row['kd_kategori'];
-															$isi = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM data_aset where kd_kategori='$idkat' AND kd_uker='$kd_uker'"));
-															echo '<td style="text-align:center;">' . $isi . '</td>';
-														}
-														?>
- 												</tr>
  												<?php
-													$no = 2;
+													$no = 1;
 													$res = $conn->query("SELECT * FROM data_uker_bagian where kd_uker='$kd_uker'");
 													while ($row = $res->fetch_assoc()) {
 														$kd_bag = $row['kd_bag'];
@@ -329,13 +314,9 @@ Left join data_uker_bagian ON data_aset.kd_uker=data_uker_bagian.kd_bag
  											<th>Nama Unit Kerja</th>
  											<th>Bagian</th>
  											<th>Assets</th>
- 											<th>Organik</th>
- 											<th>Non Organik</th>
  										</tr>
  									</thead>
  									<tbody>
-
-
  										</tr>
  									</tbody>
  								</table>

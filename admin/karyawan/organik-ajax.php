@@ -24,12 +24,15 @@ $columns = array(
     1 => 'nama_karyawan',
     2 => 'kd_uker',
     3 => 'kd_bag',
-    4 => 'email',
-    5 => 'tlp'  
+    4 => 'nama_bag',
+    5 => 'nama_uker',
+    6 => 'email',
+    7 => 'tlp'  
 );
 
 // getting total number records without any search
-	$sql = "SELECT * FROM data_karyawan where organik='$back'";	
+	$sql = "SELECT * FROM data_karyawan
+                WHERE organik='$back'";	
 $query=mysqli_query($conn, $sql) or die("organik-ajax.php: get InventoryItems");
 $totalData = mysqli_num_rows($query);
 $totalFiltered = $totalData;  // when there is no search parameter then total number rows = total number filtered rows.
@@ -37,22 +40,27 @@ $totalFiltered = $totalData;  // when there is no search parameter then total nu
 
 if( !empty($requestData['search']['value']) ) {
     // if there is a search parameter
-	 $sql = "SELECT* FROM data_karyawan ";
+	 $sql = "SELECT data_karyawan.*, a.nama_uker as dep, b.nama_bag as bagian FROM data_karyawan
+                LEFT JOIN data_uker_bagian as b ON data_karyawan.kd_uker = b.kd_bag
+                LEFT JOIN data_uker as a ON b.kd_uker = a.kd_uker";
    // $requestData['search']['value'] contains search parameter
-    $sql.="  where organik='$back' AND nik LIKE '%".$requestData['search']['value']."%' ";
+    $sql.=" WHERE organik='$back' AND nik LIKE '%".$requestData['search']['value']."%' ";
     $sql.="OR organik='$back' AND nama_karyawan LIKE '%".$requestData['search']['value']."%' ";
-    $sql.="OR organik='$back' AND kd_uker LIKE '%".$requestData['search']['value']."%' ";
-    $sql.="OR organik='$back' AND nama_unitkerja LIKE '%".$requestData['search']['value']."%' ";
-    $sql.="OR organik='$back' AND dep LIKE '%".$requestData['search']['value']."%' ";
+    $sql.="OR organik='$back' AND a.nama_uker LIKE '%".$requestData['search']['value']."%' ";
+    $sql.="OR organik='$back' AND b.nama_bag LIKE '%".$requestData['search']['value']."%' ";
+    $sql.="OR organik='$back' AND data_karyawan.kd_uker LIKE '%".$requestData['search']['value']."%' ";
 	
-    $query=mysqli_query($conn, $sql) or die("organik-ajax.php: get PO");
+    $query=mysqli_query($conn, $sql) or die($conn->error);
     $totalFiltered = mysqli_num_rows($query); // when there is a search parameter then we have to modify total number filtered rows as per search result without limit in the query 
 
     $sql.=" ORDER BY ". $columns[$requestData['order'][0]['column']]."   ".$requestData['order'][0]['dir']."   ".$limit."   "; // $requestData['order'][0]['column'] contains colmun index, $requestData['order'][0]['dir'] contains order such as asc/desc , $requestData['start'] contains start row number ,$requestData['length'] contains limit length.
-    $query=mysqli_query($conn, $sql) or die("organik-ajax.php: get PO"); // again run query with limit
+    $query=mysqli_query($conn, $sql) or die($conn->error); // again run query with limit
     
 } else {    
-	$sql = "SELECT * FROM data_karyawan where organik='$back'";
+	$sql = "SELECT data_karyawan.*, a.nama_uker as dep, b.nama_bag as bagian FROM data_karyawan
+                LEFT JOIN data_uker_bagian as b ON data_karyawan.kd_uker = b.kd_bag
+                LEFT JOIN data_uker as a ON b.kd_uker = a.kd_uker
+                where organik='$back'";
     $sql.=" ORDER BY ". $columns[$requestData['order'][0]['column']]."   ".$requestData['order'][0]['dir']."  ".$limit."   ";
     $query=mysqli_query($conn, $sql) or die("organik-ajax.php: get PO");
     
@@ -67,9 +75,9 @@ while( $row=mysqli_fetch_array($query) ) {  // preparing an array
     $nestedData[] = '</td><a href="?nik='.$row['nik'].'" title="Detail Aset">'.$row['nik'].' - '.$row['nama_karyawan'].'</a></td>';  
     $nestedData[] = $row["email"];
     $nestedData[] = $row["tlp"];
-    $nestedData[] = $row["kd_uker"]; 
-    $nestedData[] = $row["nama_unitkerja"]; 
-    $nestedData[] = $row["dep"]; 
+    $nestedData[] = $row["kd_uker"];
+    $nestedData[] = $row["bagian"];
+    $nestedData[] = $row["dep"];
     $nestedData[] = $totalaset = mysqli_num_rows(mysqli_query($conn,"SELECT * FROM data_aset where nik='$asetnik'")); 
     $nestedData[] = '<td>
 	<form role="form" action="karyawan-edit" method="POST" enctype="multipart/form-data">
@@ -94,5 +102,3 @@ $json_data = array(
             );
 
 echo json_encode($json_data);  // send data as json format
-
-?>

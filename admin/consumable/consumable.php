@@ -16,6 +16,7 @@ if (isset($_POST['simpaconsumable-edit'])) {
 		no_model='$model', kode_item='$item', sisa='$sisa', minqty='$minqty', warna = '$warna', keterangan = '$keterangan' 
 		WHERE id='$id'";
 	$query	= mysqli_query($conn, $sql);
+	echo $conn->error;
 }
 ?>
 

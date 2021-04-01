@@ -59,20 +59,16 @@ while( $row=mysqli_fetch_array($query) ) {  // preparing an array
 	//Total Karyawan
 	//$Organik=mysqli_fetch_array(mysqli_query($conn,"Select (g1+g2+g3+g4+g5+g6+g7+gpk) AS totalisi From data_uker where kd_uker='$kduker'"));	
 	 //$terisi=mysqli_fetch_array(mysqli_query($conn,"Select (g1+g2+g3+g4+g5+g6+g7+gpk) AS totalisi From data_uker where kd_uker='$kd_uker'")); 
-	 $nonOrganikDep = $row['non_organik'];
-		$totalbg=0;$totalNonOrganikBag=0;
+		$totalbg=0;
 		$sqlbag = $conn->query("SELECT * FROM data_uker_bagian where kd_uker='$kd_uker' ");
 		while($rowbag = $sqlbag->fetch_assoc())
 		{
 			$kdbag=$rowbag['kd_bag'];
-			$NonOrganikBag=$rowbag['non_organik_bag'];
 			$pc = mysqli_num_rows(mysqli_query($conn,"SELECT * FROM data_aset WHERE kd_uker = '$kdbag'"));
 			$totalbg+=$pc;
-			$totalNonOrganikBag+=$NonOrganikBag;
 			 
 		}
-		$totalAll=$totalaset+$totalbg; 
-		$totalOrganik=$nonOrganikDep+$totalNonOrganikBag; 
+		$totalAll=$totalaset+$totalbg;
 	
 	
 	
@@ -82,11 +78,8 @@ while( $row=mysqli_fetch_array($query) ) {  // preparing an array
     $nestedData[] = '</td><a href="?view='.$row['kd_uker'].'" title="Detail Aset">'.$row['nama_uker'].'</a>
 					</td>';  
     $nestedData[] = $jumlahbagian;
-    $nestedData[] = $totalAll; 
-	$nestedData[] = $organik;  
-	$nestedData[] = $nonorganik;
-		
-    
+    $nestedData[] = $totalAll;
+	
     $data[] = $nestedData;
     $no++;
 }

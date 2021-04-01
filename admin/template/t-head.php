@@ -24,7 +24,7 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
         }
     </script>
 
-    <link href="asset/plugin/select2-4.0.3/dist/css/select2.min.css" rel="stylesheet">
+    <link href="asset/plugin/select2-4.0.3/dist/css/select2.min.css" rel="stylesheet" type="text/css">
     <!-- font awosem google -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Bootstrap Core CSS -->

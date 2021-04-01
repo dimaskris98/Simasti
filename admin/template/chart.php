@@ -260,15 +260,12 @@ if (isset($_POST['dataTotal'])) {
         $data = [];
         $head = ['Kategori', 'Jumlah'];
         array_push($data, $head);
-        $result = $conn->query("SELECT * FROM  kategori WHERE tipe = 'consumable'");
+        $result = $conn->query("SELECT * FROM  consumable");
 
         while ($row = $result->fetch_assoc()) {
-            $kategori = $row['id_kategori'];
-            $sql = "SELECT sisa FROM consumable WHERE id_kategori = '$kategori'";
-            $total = mysqli_fetch_assoc(mysqli_query($conn, $sql));
             $r = [
-                $row['nama_kategori'] . " (${total['sisa']})",
-                (int)$total['sisa'] ?: 0
+                $row['kode_item'] . " (${row['sisa']})",
+                (int)$row['sisa'] ?: 0
             ];
             array_push($data, $r);
         }
@@ -280,24 +277,12 @@ if (isset($_POST['dataTotal'])) {
         $data = [];
         $head = ['Kategori', 'Jumlah'];
         array_push($data, $head);
-        $result = $conn->query("SELECT * FROM  kategori WHERE tipe = 'komponen'");
+        $result = $conn->query("SELECT * FROM  komponen");
 
         while ($row = $result->fetch_assoc()) {
-            $kategori = $row['id_kategori'];
-
-            if ($jenis == "alokasi") {
-                $sql = "SELECT SUM(qty) as sisa FROM komponen_aset as a
-                        LEFT JOIN komponen as b ON a.id_komponen = b.id
-                        WHERE b.id_kategori = '$kategori'";
-            } else if ($jenis == "gudang") {
-                $sql = "SELECT SUM(sisa) as sisa FROM komponen WHERE id_kategori = '$kategori'";
-            } else {
-                $sql = "SELECT SUM(stok) as sisa FROM komponen WHERE id_kategori = '$kategori'";
-            }
-            $total = mysqli_fetch_assoc(mysqli_query($conn, $sql));
             $r = [
-                $row['nama_kategori'] . " (${total['sisa']})",
-                (int)$total['sisa'] ?: 0
+                $row['nama_komponen'] . " (${row['sisa']})",
+                (int)$row['sisa'] ?: 0
             ];
             array_push($data, $r);
         }

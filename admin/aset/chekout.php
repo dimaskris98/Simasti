@@ -208,8 +208,6 @@ function echoLog($conn, $message)
 									$res = $conn->query("SELECT * FROM data_uker");
 									while ($row = $res->fetch_assoc()) {
 									?> <optgroup label="<?php echo $row['nama_uker']; ?>">
-
-											<option value="<?php echo $row['kd_uker'] . '/' . $row['nama_uker']; ?>"><?php echo $row['nama_uker']; ?></option>
 											<?php
 											$kduker = $row['kd_uker'];
 											$res1 = $conn->query("SELECT * FROM data_uker_bagian where kd_uker='$kduker'");

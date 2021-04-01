@@ -22,10 +22,10 @@ if (isset($_POST['saveregitrasiaset'])) {
 	$tglpo = $_POST['tglpo'];
 	$harga = $_POST['harga'];
 	if ($_POST['karyawan'] == "") {
-		$checkout_date = "";
+		$checkout_date = "NULL";
 		$lokasi = "DI TI";
 	} else {
-		$checkout_date = $_POST['tglkeluar'];
+		$checkout_date = "'${_POST['tglkeluar']}'";
 		$lokasi = "DI USER";
 	}
 	if (isset($_POST['sewa'])) {
@@ -40,14 +40,18 @@ if (isset($_POST['saveregitrasiaset'])) {
 			tgl_po='$tglpo', lokasi='$lokasi',created_at='$created_at', sewa='$sewa',catatan='$catatan',
 			tahun='$tahun',admin='$id_user',status='$status'
 			WHERE no='$id_monitor'";
-		$query	= mysqli_query($conn, $sql);
+		if(!mysqli_query($conn, $sql)){
+			$conn->error;
+		}
 	}
-	$sql = "INSERT INTO data_aset VALUES ('','$no_aset','$tahun','$kd_kategori',
+	$sql = "INSERT INTO data_aset VALUES (NULL,'$no_aset','$tahun','$kd_kategori',
 	'$model','$sn','$ip_address','$os','$proc','$ramhd','$vga','$kd_uker','$nama_unitkerja','$nik','$karyawan','$lokasi','$pemasok',
-	'$sewa','$po','$tglpo','$harga','$created_at','','','','','','$id_monitor',
-	'$checkout_date','','$catatan','$id_user','$status')";
-	$query	= mysqli_query($conn, $sql);
-	echo '<script>window.location="All"</script>';
+	'$sewa','$po','$tglpo','$harga','$created_at',NULL,NULL,NULL,NULL,NULL,'$id_monitor',
+	$checkout_date,'','$catatan','$id_user','$status')";
+	if(!mysqli_query($conn, $sql)){
+		$conn->error;
+	}
+	// '<script>window.location="All"</script>';
 }
 if ($mod = 'registrasiaset') {
 ?>
